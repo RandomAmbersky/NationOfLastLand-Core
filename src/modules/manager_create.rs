@@ -10,4 +10,8 @@ impl ManagerCreate {
     pub fn create_waste(&self, pos: Pos) -> Result<(), String> {
         Ok(())
     }
+
+    pub fn create_vehicle(&self, pos: Pos) -> Result<(), String> {
+        Ok(())
+    }
 }
