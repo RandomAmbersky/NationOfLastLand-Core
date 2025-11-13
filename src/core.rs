@@ -19,7 +19,10 @@ impl Core {
     pub fn new() -> Self {
         let world = World::new();
         let s = State::new();
-        Core { world, s }
+        let mut c = Core { world, s };
+
+        c.init_world();
+        c
     }
 
     pub fn create_waste(&mut self, pos: Pos) -> Result<(), String> {
@@ -38,5 +41,18 @@ impl Core {
 
     pub fn export_world(&self) -> String {
         export_to_json(&self.world, &self.s)
+    }
+}
+
+impl Core {
+    fn init_world(&mut self) {
+        self.create_vehicle(Pos { x: 1.0, y: 1.0 })
+            .expect("Failed to create vehicle");
+
+        self.create_waste(Pos { x: 5.0, y: 5.0 })
+            .expect("Failed to create waste");
+
+        self.create_waste(Pos { x: 10.0, y: 10.0 })
+            .expect("Failed to create waste");
     }
 }
