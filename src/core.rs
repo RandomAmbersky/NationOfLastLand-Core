@@ -37,6 +37,6 @@ impl Core {
     }
 
     pub fn export_world(&self) -> String {
-        export_to_json(&self.world)
+        export_to_json(&self.world, &self.s)
     }
 }

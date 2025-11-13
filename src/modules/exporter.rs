@@ -1,6 +1,7 @@
 use crate::modules::components::Pos;
 use crate::modules::entities::Vehicle;
 use crate::modules::entities::Waste;
+use crate::state::State;
 use hecs::World;
 use serde::Serialize;
 use serde_json::Value;
@@ -10,9 +11,10 @@ use std::collections::HashMap;
 struct ExportData {
     wastes: Vec<HashMap<String, Value>>,
     vehicles: Vec<HashMap<String, Value>>,
+    state: State,
 }
 
-pub fn export_to_json(world: &World) -> String {
+pub fn export_to_json(world: &World, state: &State) -> String {
     let mut wastes = Vec::new();
     let mut vehicles = Vec::new();
 
@@ -32,6 +34,6 @@ pub fn export_to_json(world: &World) -> String {
         ]));
     }
 
-    let data = ExportData { wastes, vehicles };
+    let data = ExportData { wastes, vehicles, state: state.clone() };
     serde_json::to_string(&data).unwrap()
 }

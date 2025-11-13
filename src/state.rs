@@ -1,13 +1,15 @@
 use crate::modules::components::Reputation;
+use serde::Serialize;
 
+#[derive(Serialize, Clone)]
 pub struct State {
-    pub r: Reputation,
+    pub reputation: Reputation,
 }
 
 impl Default for State {
     fn default() -> Self {
         Self {
-            r: Reputation { value: 0 },
+            reputation: Reputation { value: 0 },
         }
     }
 }

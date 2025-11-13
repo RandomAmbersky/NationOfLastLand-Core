@@ -4,6 +4,7 @@ mod state;
 
 pub use core::Core;
 pub use modules::components::Pos;
+pub use state::State;
 
 use std::ffi::CString;
 use std::os::raw::c_char;
