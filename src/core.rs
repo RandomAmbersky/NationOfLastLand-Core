@@ -7,6 +7,12 @@ pub struct Core {
     world: World,
 }
 
+impl Default for Core {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Core {
     pub fn new() -> Self {
         let world = World::new();

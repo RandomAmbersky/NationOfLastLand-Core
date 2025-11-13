@@ -1,4 +1,4 @@
-use NationOfLastLand_Core::{Core, Pos};
+use nation_of_last_land_core::{Core, Pos};
 
 fn main() {
     let mut core = Core::new();

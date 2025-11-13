@@ -1,5 +1,5 @@
 [package]
-name = "NationOfLastLand-Core"
+name = "nation-of-last-land-core"
 version = "0.1.0"
 edition = "2024"
 
