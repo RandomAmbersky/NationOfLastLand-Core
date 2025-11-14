@@ -3,7 +3,7 @@ resolver = "3"
 members = [
     "core",
     "interface-native",
-    "wasm-interface"
+    "interface-wasm"
 ]
 
 [workspace.dependencies]
