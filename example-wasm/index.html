@@ -64,7 +64,9 @@
 
     <div class="container">
         <h2>Pixi.js Rendering</h2>
-        <button onclick="renderWorld()">Render World with Pixi.js</button>
+        <button onclick="initRender()">Init World</button>
+        <button onclick="startAnimation()" id="startBtn">Start Animation</button>
+        <button onclick="stopAnimation()" id="stopBtn" disabled>Stop Animation</button>
         <div id="canvasContainer"></div>
     </div>
 
@@ -74,9 +76,14 @@
     </div>
 
     <script type="module">
-        import init, { get_core_info, async_example, get_world_data } from './pkg/example_wasm.js';
+        import init, { get_core_info, async_example, get_world_data, update_world } from './pkg/example_wasm.js';
 
         let pixiApp = null;
+        let animationFrame = null;
+        let lastTime = 0;
+        let isRunning = false;
+        let canvas = null;
+        let ctx = null;
 
         async function run() {
             await init();
@@ -97,20 +104,29 @@
             }
         };
 
-        window.renderWorld = async function() {
-            console.log('Starting renderWorld');
+        window.initRender = function() {
+            console.log('Starting initRender');
             const container = document.getElementById('canvasContainer');
             container.innerHTML = ''; // Clear previous canvas
 
             // Create plain HTML canvas
-            const canvas = document.createElement('canvas');
+            canvas = document.createElement('canvas');
             canvas.width = 800;
             canvas.height = 600;
             container.appendChild(canvas);
-            const ctx = canvas.getContext('2d');
+            ctx = canvas.getContext('2d');
             console.log('Canvas created and added');
 
-            // Fill background white
+            // Initial render
+            draw();
+
+            log('World initialized');
+        };
+
+        function draw() {
+            if (!ctx) return;
+
+            // Clear background
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, 800, 600);
 
@@ -118,7 +134,6 @@
             ctx.fillStyle = 'black';
             ctx.font = '16px Arial';
             ctx.fillText('Canvas2D is working!', 10, 30);
-            console.log('Test text added');
 
             // Get world data from WASM
             const worldDataJson = get_world_data();
@@ -132,8 +147,6 @@
                 console.error('JSON parse error:', error);
                 return;
             }
-
-            log(`Rendered world with ${worldData.wastes.length} wastes and ${worldData.vehicles.length} vehicles`);
 
             // Scale factor for positions
             const scale = 50;
@@ -166,6 +179,50 @@
             });
 
             console.log('Drawing completed');
+        }
+
+        function animate(currentTime) {
+            if (!isRunning) return;
+
+            const deltaMs = currentTime - lastTime;
+            lastTime = currentTime;
+
+            // Update world in WASM
+            update_world(deltaMs);
+
+            // Redraw
+            draw();
+
+            // Schedule next frame
+            animationFrame = requestAnimationFrame(animate);
+        }
+
+        window.startAnimation = function() {
+            if (isRunning) return;
+
+            isRunning = true;
+            lastTime = performance.now();
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+
+            // Start animation loop
+            animationFrame = requestAnimationFrame(animate);
+
+            log('Animation started');
+        };
+
+        window.stopAnimation = function() {
+            if (!isRunning) return;
+
+            isRunning = false;
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+                animationFrame = null;
+            }
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+
+            log('Animation stopped');
         };
 
         function log(message) {
