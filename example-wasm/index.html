@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Example WASM</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.0.3/pixi.min.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -74,6 +74,7 @@
     </div>
 
     <script type="module">
+        import * as PIXI from 'https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.0.3/pixi.mjs';
         import init, { get_core_info, async_example, get_world_data } from './pkg/example_wasm.js';
 
         let pixiApp = null;
@@ -97,12 +98,13 @@
             }
         };
 
-        window.renderWorld = function() {
+        window.renderWorld = async function() {
             const container = document.getElementById('canvasContainer');
             container.innerHTML = ''; // Clear previous canvas
 
             // Create Pixi.js app
-            pixiApp = new PIXI.Application({
+            pixiApp = new PIXI.Application();
+            await pixiApp.init({
                 width: 800,
                 height: 600,
                 backgroundColor: 0x1099bb
@@ -139,6 +141,9 @@
                 graphics.y = vehicle.pos.y * scale;
                 pixiApp.stage.addChild(graphics);
             });
+
+            // Render the scene
+            pixiApp.render();
         };
 
         function log(message) {
