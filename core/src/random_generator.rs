@@ -20,10 +20,11 @@ pub fn generate_between(range: &MaxMin) -> f32 {
 }
 
 fn generate_random_pos(map_size: &MapSize) -> Pos {
-    let mut rng = rand::thread_rng();
+    let x_range = MaxMin { min: 0.0, max: map_size.width as f32 };
+    let y_range = MaxMin { min: 0.0, max: map_size.height as f32 };
     Pos {
-        x: rng.gen_range(0.0..=map_size.width as f32),
-        y: rng.gen_range(0.0..=map_size.height as f32),
+        x: generate_between(&x_range),
+        y: generate_between(&y_range),
     }
 }
 
