@@ -1,6 +1,6 @@
 use crate::defines::{MapSize, MaxMin};
-use crate::modules::components::{Pos, Rot, ToxicPower};
-use crate::modules::entities::{Vehicle, Waste};
+use crate::modules::components::{Pos, Rot};
+use crate::modules::entities::Vehicle;
 use crate::modules::exporter::export_to_json;
 use crate::modules::state::State;
 use crate::random_generator::RandomGenerator;
@@ -36,7 +36,7 @@ impl Core {
         c
     }
 
-    pub fn create_waste(&mut self, pos: Pos) -> Result<(), String> {
+    pub fn create_waste(&mut self) -> Result<(), String> {
         self.r.create_waste(&mut self.world);
         Ok(())
     }
@@ -60,10 +60,8 @@ impl Core {
         self.create_vehicle(Pos { x: 1.0, y: 1.0 })
             .expect("Failed to create vehicle");
 
-        self.create_waste(Pos { x: 5.0, y: 5.0 })
-            .expect("Failed to create waste");
+        self.create_waste().expect("Failed to create waste");
 
-        self.create_waste(Pos { x: 10.0, y: 10.0 })
-            .expect("Failed to create waste");
+        self.create_waste().expect("Failed to create waste");
     }
 }
