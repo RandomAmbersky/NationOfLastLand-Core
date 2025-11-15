@@ -74,7 +74,6 @@
     </div>
 
     <script type="module">
-        import * as PIXI from 'https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.0.3/pixi.mjs';
         import init, { get_core_info, async_example, get_world_data } from './pkg/example_wasm.js';
 
         let pixiApp = null;
@@ -99,22 +98,41 @@
         };
 
         window.renderWorld = async function() {
+            console.log('Starting renderWorld');
             const container = document.getElementById('canvasContainer');
             container.innerHTML = ''; // Clear previous canvas
 
-            // Create Pixi.js app
-            pixiApp = new PIXI.Application();
-            await pixiApp.init({
-                width: 800,
-                height: 600,
-                backgroundColor: 0x1099bb
-            });
+            // Create plain HTML canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = 800;
+            canvas.height = 600;
+            container.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            console.log('Canvas created and added');
 
-            container.appendChild(pixiApp.canvas);
+            // Fill background white
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, 800, 600);
+
+            // Add test text
+            ctx.fillStyle = 'black';
+            ctx.font = '36px Arial';
+            ctx.fillText('Canvas2D is working!', 10, 50);
+            console.log('Test text added');
 
             // Get world data from WASM
             const worldDataJson = get_world_data();
-            const worldData = JSON.parse(worldDataJson);
+            console.log('worldDataJson:', worldDataJson);
+
+            let worldData;
+            try {
+                worldData = JSON.parse(worldDataJson);
+                console.log('worldData parsed:', worldData);
+            } catch (error) {
+                console.error('JSON parse error:', error);
+                return;
+            }
+
             log(`Rendered world with ${worldData.wastes.length} wastes and ${worldData.vehicles.length} vehicles`);
 
             // Scale factor for positions
@@ -122,24 +140,32 @@
 
             // Draw wastes (red squares)
             worldData.wastes.forEach((waste, index) => {
-                const graphics = new PIXI.Graphics();
-                graphics.fill(0xff0000).drawRect(0, 0, 20, 20);
-                graphics.x = waste.pos.x * scale;
-                graphics.y = waste.pos.y * scale;
-                pixiApp.stage.addChild(graphics);
+                console.log(`Drawing waste ${index} at pos:`, waste.pos);
+                const x = waste.pos.x * scale;
+                const y = waste.pos.y * scale;
+                ctx.fillStyle = 'red';
+                ctx.fillRect(x, y, 20, 20);
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(x, y, 20, 20);
+                console.log(`Waste drawn at: ${x}, ${y}`);
             });
 
             // Draw vehicles (blue circles)
             worldData.vehicles.forEach((vehicle, index) => {
-                const graphics = new PIXI.Graphics();
-                graphics.fill(0x0000ff).drawCircle(0, 0, 15);
-                graphics.x = vehicle.pos.x * scale;
-                graphics.y = vehicle.pos.y * scale;
-                pixiApp.stage.addChild(graphics);
+                console.log(`Drawing vehicle ${index} at pos:`, vehicle.pos);
+                const x = vehicle.pos.x * scale;
+                const y = vehicle.pos.y * scale;
+                ctx.beginPath();
+                ctx.arc(x, y, 15, 0, 2 * Math.PI);
+                ctx.fillStyle = 'blue';
+                ctx.fill();
+                ctx.strokeStyle = 'black';
+                ctx.stroke();
+                console.log(`Vehicle drawn at: ${x}, ${y}`);
             });
 
-            // Render the scene
-            pixiApp.render();
+            console.log('Drawing completed');
         };
 
         function log(message) {
