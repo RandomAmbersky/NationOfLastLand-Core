@@ -1,11 +1,14 @@
+use crate::defines::{MapSize, MaxMin};
 use crate::modules::components::{Pos, Rot, ToxicPower};
 use crate::modules::entities::{Vehicle, Waste};
 use crate::modules::exporter::export_to_json;
 use crate::modules::state::State;
+use crate::random_generator::RandomGenerator;
 use hecs::World;
 
 pub struct Core {
     world: World,
+    r: RandomGenerator,
     s: State,
 }
 
@@ -19,7 +22,15 @@ impl Core {
     pub fn new() -> Self {
         let world = World::new();
         let s = State::new();
-        let mut c = Core { world, s };
+        let r = RandomGenerator {
+            toxicPower: MaxMin { max: 1.0, min: 1.0 },
+            size: MapSize {
+                width: 10,
+                height: 10,
+            },
+        };
+
+        let mut c = Core { world, s, r };
 
         c.init_world();
         c

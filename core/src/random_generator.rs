@@ -10,8 +10,8 @@ use crate::{
 };
 
 pub struct RandomGenerator {
-    size: MapSize,
-    toxicPower: MaxMin,
+    pub size: MapSize,
+    pub toxicPower: MaxMin,
 }
 
 pub fn generate_between(range: &MaxMin) -> f32 {
@@ -20,8 +20,14 @@ pub fn generate_between(range: &MaxMin) -> f32 {
 }
 
 fn generate_random_pos(map_size: &MapSize) -> Pos {
-    let x_range = MaxMin { min: 0.0, max: map_size.width as f32 };
-    let y_range = MaxMin { min: 0.0, max: map_size.height as f32 };
+    let x_range = MaxMin {
+        min: 0.0,
+        max: map_size.width as f32,
+    };
+    let y_range = MaxMin {
+        min: 0.0,
+        max: map_size.height as f32,
+    };
     Pos {
         x: generate_between(&x_range),
         y: generate_between(&y_range),
@@ -35,3 +41,4 @@ impl RandomGenerator {
         world.spawn((pos, ToxicPower { level }, Waste {}));
     }
 }
+        
