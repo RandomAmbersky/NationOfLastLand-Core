@@ -37,7 +37,7 @@ impl Core {
     }
 
     pub fn create_waste(&mut self, pos: Pos) -> Result<(), String> {
-        self.world.spawn((pos, ToxicPower { level: 5.0 }, Waste {}));
+        self.r.create_waste(&mut self.world);
         Ok(())
     }
 
