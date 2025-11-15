@@ -1,4 +1,4 @@
-use crate::modules::components::{Pos, Rot};
+use crate::modules::components::{Pos, Rot, ToxicPower};
 use crate::modules::entities::{Vehicle, Waste};
 use crate::modules::exporter::export_to_json;
 use crate::modules::state::State;
@@ -26,7 +26,7 @@ impl Core {
     }
 
     pub fn create_waste(&mut self, pos: Pos) -> Result<(), String> {
-        self.world.spawn((pos, Waste {}));
+        self.world.spawn((pos, ToxicPower { level: 5.0 }, Waste {}));
         Ok(())
     }
 
