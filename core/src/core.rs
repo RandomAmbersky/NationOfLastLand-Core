@@ -3,6 +3,7 @@ use crate::modules::components::{Pos, Rot};
 use crate::modules::entities::Vehicle;
 use crate::modules::exporter::export_to_json;
 use crate::modules::state::State;
+use crate::modules::systems::ai_vehicle::ai_vehicle_system;
 use crate::random_generator::RandomGenerator;
 use hecs::World;
 
@@ -47,6 +48,9 @@ impl Core {
     }
 
     pub fn update(&mut self, _delta: f64) -> Result<(), String> {
+        // Run AI system to find nearest waste targets for all vehicles
+        let _vehicle_targets = ai_vehicle_system(&self.world);
+        // TODO: Use the vehicle targets to update vehicle behavior
         Ok(())
     }
 
