@@ -1,11 +1,15 @@
 mod pos;
 mod reputation;
 mod rot;
+mod states;
 mod target;
 mod toxic_power;
+mod velocity;
 
 pub use pos::Pos;
 pub use reputation::Reputation;
 pub use rot::Rot;
+pub use states::{IsMoving, IsStopped, IsWaitingTarget};
 pub use target::Target;
 pub use toxic_power::ToxicPower;
+pub use velocity::Velocity;
