@@ -1,5 +1,5 @@
 use crate::defines::{MapSize, MinMax};
-use crate::modules::components::{Pos, Rot};
+use crate::modules::components::{MaxSpeed, Pos, Rot};
 use crate::modules::entities::Vehicle;
 use crate::modules::exporter::export_to_json;
 use crate::modules::state::State;
@@ -43,7 +43,12 @@ impl Core {
     }
 
     pub fn create_vehicle(&mut self, pos: Pos) -> Result<(), String> {
-        self.world.spawn((pos, Rot { x: 0.0, y: 0.0 }, Vehicle {}));
+        self.world.spawn((
+            pos,
+            Rot { x: 0.0, y: 0.0 },
+            MaxSpeed { value: 1.0 },
+            Vehicle {},
+        ));
         Ok(())
     }
 
