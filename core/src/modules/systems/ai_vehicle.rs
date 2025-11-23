@@ -1,8 +1,8 @@
 use crate::defines::Point;
 use crate::modules::components::{
-    IsMoving, IsStopped, IsWaitingTarget, MaxSpeed, Pos, TargetPos, Velocity,
+    AlertType, IsMoving, IsStopped, IsWaitingTarget, MaxSpeed, Pos, TargetPos, Velocity
 };
-use crate::modules::entities::{Vehicle, Waste};
+use crate::modules::entities::{Vehicle};
 use hecs::World;
 
 fn find_nearest_waste_from_list(waste_positions: &[Pos], from: Pos) -> Option<Pos> {
@@ -69,7 +69,7 @@ fn move_vehicles(world: &mut World) {
 fn set_target_to_waiting_vehicles(world: &mut World) {
     // First, precompute all waste positions
     let mut waste_positions = Vec::new();
-    for (_entity, (pos, _waste)) in world.query::<(&Pos, &Waste)>().iter() {
+    for (_entity, (pos, _alert_type)) in world.query::<(&Pos, &AlertType)>().iter() {
         waste_positions.push(*pos);
     }
 
@@ -103,7 +103,7 @@ fn set_target_to_waiting_vehicles(world: &mut World) {
     }
 }
 
-fn attack_vehicles(world: &mut World) {
+fn attack_vehicles(_world: &mut World) {
     
 }
 
