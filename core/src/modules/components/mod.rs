@@ -7,6 +7,7 @@ mod health;
 mod clean_power;
 mod target_id;
 mod alert_type;
+mod damage_type;
 
 pub use max_speed::MaxSpeed;
 pub use spatial::{Pos, Rot, Velocity, TargetPos};
@@ -17,3 +18,4 @@ pub use health::Health;
 pub use clean_power::CleanPower;
 pub use target_id::TargetId;
 pub use alert_type::AlertType;
+pub use damage_type::DamageType;
