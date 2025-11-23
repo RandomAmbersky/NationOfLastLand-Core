@@ -10,7 +10,6 @@ use crate::{
 
 pub struct RandomGenerator {
     pub size: MapSize,
-    pub toxic_power: MinMax,
     pub toxic_health: MinMax
 }
 
@@ -35,9 +34,9 @@ fn generate_random_pos(map_size: &MapSize) -> Pos {
 }
 
 impl RandomGenerator {
-    pub fn create_waste(&self, world: &mut World) {
+    pub fn create_trash(&self, world: &mut World) {
         let pos = generate_random_pos(&self.size);
         let health = generate_between(&self.toxic_health);
-        world.spawn((pos, Health { value: health }, AlertType::Waste));
+        world.spawn((pos, Health { value: health }, AlertType::Trash));
     }
 }

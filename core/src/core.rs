@@ -24,7 +24,6 @@ impl Core {
         let world = World::new();
         let s = State::new();
         let r = RandomGenerator {
-            toxic_power: MinMax { max: 1.0, min: 1.0 },
             toxic_health: MinMax { max: 5.0, min: 1.0 },
             size: MapSize {
                 width: 10,
@@ -38,8 +37,8 @@ impl Core {
         c
     }
 
-    pub fn create_waste(&mut self) -> Result<(), String> {
-        self.r.create_waste(&mut self.world);
+    pub fn create_trash(&mut self) -> Result<(), String> {
+        self.r.create_trash(&mut self.world);
         Ok(())
     }
 
@@ -76,8 +75,8 @@ impl Core {
         self.create_vehicle(Pos { x: 1.0, y: 1.0 })
             .expect("Failed to create vehicle");
 
-        self.create_waste().expect("Failed to create waste");
+        self.create_trash().expect("Failed to create waste");
 
-        self.create_waste().expect("Failed to create waste");
+        self.create_trash().expect("Failed to create waste");
     }
 }
