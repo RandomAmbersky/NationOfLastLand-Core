@@ -1,6 +1,5 @@
-use crate::modules::components::{CleanPower, Health, IsMoving, IsStopped, IsWaitingTarget, MaxSpeed, Pos, Rot, TargetPos, ToxicPower, Velocity};
+use crate::modules::components::{AlertType, CleanPower, Health, IsMoving, IsStopped, IsWaitingTarget, MaxSpeed, Pos, Rot, TargetPos, ToxicPower, Velocity};
 use crate::modules::entities::Vehicle;
-use crate::modules::entities::Waste;
 use crate::modules::state::State;
 use hecs::World;
 use serde::{Deserialize, Serialize};
@@ -9,23 +8,30 @@ use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize)]
 struct ExportData {
-    wastes: Vec<HashMap<String, Value>>,
+    alerts: Vec<HashMap<String, Value>>,
     vehicles: Vec<HashMap<String, Value>>,
     state: State,
 }
 
 pub fn export_to_json(world: &World, state: &State) -> String {
-    let mut wastes = Vec::new();
+    let mut alerts = Vec::new();
     let mut vehicles = Vec::new();
 
     // Выборка всех waste
-    for (_id, (pos, health, toxic_power, _waste)) in world.query::<(&Pos, &Health, &ToxicPower, &Waste)>().iter() {
-        wastes.push(HashMap::from([
+    for (_id, (pos, health, alert_type, toxic_power)) in world.query::<(&Pos, &Health, &AlertType, Option<&ToxicPower>)>().iter() {
+        let mut alert_data = HashMap::from([
             ("id".to_string(), Value::Number(_id.id().into())),
             ("pos".to_string(), serde_json::to_value(*pos).unwrap()),
             ("health".to_string(), serde_json::to_value(health).unwrap()),
-            ("toxic_power".to_string(), serde_json::to_value(*toxic_power).unwrap()),
-        ]));
+            ("alert_type".to_string(), serde_json::to_value(*alert_type).unwrap()),
+        ]);
+
+        // Add optional toxic_power
+        if let Some(toxic_power) = toxic_power {
+            alert_data.insert("toxic_power".to_string(), serde_json::to_value(*toxic_power).unwrap());
+        }
+
+        alerts.push(alert_data);
     }
 
     // Выборка всех vehicle
@@ -67,7 +73,7 @@ pub fn export_to_json(world: &World, state: &State) -> String {
     }
 
     let data = ExportData {
-        wastes,
+        alerts,
         vehicles,
         state: state.clone(),
     };
