@@ -17,8 +17,8 @@ pub fn export_to_json(world: &World, state: &State) -> String {
     let mut alerts = Vec::new();
     let mut vehicles = Vec::new();
 
-    // Выборка всех waste
-    for (_id, (pos, health, alert_type, toxic_power)) in world.query::<(&Pos, &Health, &AlertType, Option<&ToxicPower>)>().iter() {
+    // Выборка всех alerts
+    for (_id, (pos, health, alert_type )) in world.query::<(&Pos, &Health, &AlertType)>().iter() {
         let mut alert_data = HashMap::from([
             ("id".to_string(), Value::Number(_id.id().into())),
             ("pos".to_string(), serde_json::to_value(*pos).unwrap()),
@@ -27,7 +27,7 @@ pub fn export_to_json(world: &World, state: &State) -> String {
         ]);
 
         // Add optional toxic_power
-        if let Some(toxic_power) = toxic_power {
+        if let Ok(toxic_power) = world.get::<&ToxicPower>(_id) {
             alert_data.insert("toxic_power".to_string(), serde_json::to_value(*toxic_power).unwrap());
         }
 
