@@ -1,6 +1,6 @@
 use crate::defines::Point;
 use crate::modules::components::{
-    IsMoving, IsStopped, IsWaitingTarget, MaxSpeed, Pos, Target, Velocity,
+    IsMoving, IsStopped, IsWaitingTarget, MaxSpeed, Pos, TargetPos, Velocity,
 };
 use crate::modules::entities::{Vehicle, Waste};
 use hecs::World;
@@ -29,7 +29,7 @@ fn move_vehicles(world: &mut World) {
 
     // Query for vehicles that are moving and update their velocity and position
     for (entity, (pos, target, velocity, max_speed, _is_moving)) in world
-        .query::<(&mut Pos, &Target, &mut Velocity, &MaxSpeed, &IsMoving)>()
+        .query::<(&mut Pos, &TargetPos, &mut Velocity, &MaxSpeed, &IsMoving)>()
         .iter()
     {
         let dx = target.value.x - pos.x;
@@ -86,7 +86,7 @@ fn set_target_to_waiting_vehicles(world: &mut World) {
         let nearest_waste = find_nearest_waste_from_list(&waste_positions, pos);
         if let Some(waste_pos) = nearest_waste {
             // Assign target
-            let target = Target {
+            let target = TargetPos {
                 value: Point {
                     x: waste_pos.x,
                     y: waste_pos.y,

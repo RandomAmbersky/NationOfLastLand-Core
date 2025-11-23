@@ -1,4 +1,4 @@
-use crate::modules::components::{CleanPower, Health, IsMoving, IsStopped, IsWaitingTarget, MaxSpeed, Pos, Rot, Target, ToxicPower, Velocity};
+use crate::modules::components::{CleanPower, Health, IsMoving, IsStopped, IsWaitingTarget, MaxSpeed, Pos, Rot, TargetPos, ToxicPower, Velocity};
 use crate::modules::entities::Vehicle;
 use crate::modules::entities::Waste;
 use crate::modules::state::State;
@@ -44,7 +44,7 @@ pub fn export_to_json(world: &World, state: &State) -> String {
         if let Ok(health) = world.get::<&Health>(_id) {
             vehicle_data.insert("health".to_string(), serde_json::to_value(*health).unwrap());
         }
-        if let Ok(target) = world.get::<&Target>(_id) {
+        if let Ok(target) = world.get::<&TargetPos>(_id) {
             vehicle_data.insert("target".to_string(), serde_json::to_value(*target).unwrap());
         }
         if let Ok(velocity) = world.get::<&Velocity>(_id) {
