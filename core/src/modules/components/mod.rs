@@ -1,4 +1,4 @@
-mod max_speed;
+
 mod spatial;
 mod reputation;
 mod states;
@@ -9,8 +9,7 @@ mod target_id;
 mod alert_type;
 mod damage_type;
 
-pub use max_speed::MaxSpeed;
-pub use spatial::{Pos, Rot, Velocity, TargetPos};
+pub use spatial::{MaxSpeed, Pos, Rot, Velocity, TargetPos};
 pub use reputation::Reputation;
 pub use states::{IsMoving, IsStopped, IsWaitingTarget};
 pub use toxic_power::ToxicPower;
