@@ -12,5 +12,5 @@ pub use reputation::Reputation;
 pub use states::{IsMoving, IsStopped, IsWaitingTarget};
 pub use health::Health;
 pub use target_id::TargetId;
-pub use alert_type::AlertType;
+pub use alert_type::UnitType;
 pub use damage_type::DamageType;

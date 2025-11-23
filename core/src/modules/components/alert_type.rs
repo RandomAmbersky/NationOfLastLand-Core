@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Clone, Copy)]
-pub enum AlertType {
+pub enum UnitType {
     Waste,
     Trash
 }

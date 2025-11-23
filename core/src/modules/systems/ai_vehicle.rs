@@ -1,6 +1,6 @@
 use crate::defines::Point;
 use crate::modules::components::{
-    AlertType, IsMoving, IsStopped, IsWaitingTarget, MaxSpeed, Pos, TargetPos, Velocity
+    UnitType, IsMoving, IsStopped, IsWaitingTarget, MaxSpeed, Pos, TargetPos, Velocity
 };
 use crate::modules::entities::{Vehicle};
 use hecs::World;
@@ -69,7 +69,7 @@ fn move_vehicles(world: &mut World) {
 fn set_target_to_waiting_vehicles(world: &mut World) {
     // First, precompute all waste positions
     let mut waste_positions = Vec::new();
-    for (_entity, (pos, _alert_type)) in world.query::<(&Pos, &AlertType)>().iter() {
+    for (_entity, (pos, _alert_type)) in world.query::<(&Pos, &UnitType)>().iter() {
         waste_positions.push(*pos);
     }
 
