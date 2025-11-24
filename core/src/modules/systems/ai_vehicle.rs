@@ -44,7 +44,7 @@ fn set_target_to_waiting_vehicles(world: &mut World) {
     // First, precompute all waste positions
     let mut trash_positions = Vec::new();
     for (_entity, (pos, unit_type)) in world.query::<(&Pos, &UnitType)>().iter() {
-        if matches!(unit_type, UnitType::Trash) {
+        if *unit_type == UnitType::Trash {
             trash_positions.push(*pos);
         }
     }
