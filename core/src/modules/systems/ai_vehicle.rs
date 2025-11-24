@@ -88,7 +88,6 @@ fn set_target_to_waiting_vehicles(world: &mut World) {
     }
 }
 
-
 fn attack_vehicles(_world: &mut World) {
     
 }
