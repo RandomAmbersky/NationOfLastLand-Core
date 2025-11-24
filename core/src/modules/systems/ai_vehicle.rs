@@ -5,24 +5,6 @@ use crate::modules::components::{
 
 use hecs::World;
 
-fn find_nearest_position_from_list(positions: &[Pos], from: Pos) -> Option<Pos> {
-    let mut nearest: Option<Pos> = None;
-    let mut min_distance_squared = f32::INFINITY;
-
-    for &pos in positions {
-        let dx = pos.x - from.x;
-        let dy = pos.y - from.y;
-        let distance_squared = dx * dx + dy * dy;
-
-        if distance_squared < min_distance_squared {
-            min_distance_squared = distance_squared;
-            nearest = Some(pos);
-        }
-    }
-
-    nearest
-}
-
 fn move_vehicles(world: &mut World) {
     // Query for vehicles that are moving and update their velocity and position
     for (_entity, (pos, target, velocity, max_speed, unit_state)) in world
@@ -73,7 +55,7 @@ fn set_target_to_waiting_vehicles(world: &mut World) {
         world.query_mut::<(&Pos, &UnitType, &mut UnitState)>()
     {
         if *unit_type == UnitType::Vehicle && *unit_state == UnitState::IsWaitingTarget {
-            let nearest_waste = find_nearest_position_from_list(&trash_positions, *pos);
+            let nearest_waste = pos.find_nearest_position(&trash_positions);
             if let Some(waste_pos) = nearest_waste {
                 // Assign target
                 let _target = TargetPos {
