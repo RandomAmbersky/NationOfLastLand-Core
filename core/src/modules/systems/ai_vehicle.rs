@@ -1,6 +1,6 @@
-use crate::defines::Point;
+use crate::modules::components::Pos;
 use crate::modules::components::{
-    EntityType, UnitState, MaxSpeed, Pos, TargetPos, Velocity
+    EntityType, UnitState, MaxSpeed, TargetPos, Velocity
 };
 use crate::modules::markers::Vehicle;
 
@@ -61,7 +61,7 @@ fn set_target_to_waiting_vehicles(world: &mut World) {
             if let Some(waste_pos) = nearest_waste {
                 // Assign target
                 let target = TargetPos {
-                    value: Point {
+                    value: Pos {
                         x: waste_pos.x,
                         y: waste_pos.y,
                     },
