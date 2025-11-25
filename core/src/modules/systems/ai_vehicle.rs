@@ -1,6 +1,6 @@
 use crate::defines::Point;
 use crate::modules::components::{
-    UnitType, UnitState, MaxSpeed, Pos, TargetPos, Velocity
+    AlertType, UnitState, MaxSpeed, Pos, TargetPos, Velocity
 };
 use crate::modules::markers::Vehicle;
 
@@ -44,8 +44,8 @@ fn move_vehicles(world: &mut World) {
 fn set_target_to_waiting_vehicles(world: &mut World) {
     // First, precompute all waste positions
     let mut trash_positions = Vec::new();
-    for (_entity, (pos, unit_type)) in world.query::<(&Pos, &UnitType)>().iter() {
-        if *unit_type == UnitType::Trash {
+    for (_entity, (pos, unit_type)) in world.query::<(&Pos, &AlertType)>().iter() {
+        if *unit_type == AlertType::Trash {
             trash_positions.push(*pos);
         }
     }

@@ -1,4 +1,4 @@
-use crate::modules::components::{UnitType, Health, Pos, TargetPos, Velocity};
+use crate::modules::components::{AlertType, Health, Pos, TargetPos, Velocity};
 
 use crate::modules::state::State;
 use hecs::World;
@@ -16,7 +16,7 @@ pub fn export_to_json(world: &World, state: &State) -> String {
     let mut units = Vec::new();
 
     // Выборка всех alerts
-    for (_id, (pos, unit_type )) in world.query::<(&Pos, &UnitType)>().iter() {
+    for (_id, (pos, unit_type )) in world.query::<(&Pos, &AlertType)>().iter() {
         let mut alert_data = HashMap::from([
             ("id".to_string(), Value::Number(_id.id().into())),
             ("pos".to_string(), serde_json::to_value(*pos).unwrap()),
