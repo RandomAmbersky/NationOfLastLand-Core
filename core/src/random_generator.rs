@@ -4,7 +4,7 @@ use rand::Rng;
 use crate::{
     defines::{MapSize, MinMax},
     modules::{
-        components::{EntityType, Health, Pos},
+        components::{EntityType, Guid, Health, Pos},
         markers::{Alert}
     },
 };
@@ -38,6 +38,7 @@ impl RandomGenerator {
     pub fn create_trash(&self, world: &mut World) {
         let pos = generate_random_pos(&self.size);
         let health = generate_between(&self.toxic_health);
-        world.spawn((pos, Health(health), EntityType::Trash, Alert {}));
+        let guid = Guid(rand::random::<u128>());
+        world.spawn((guid, pos, Health(health), EntityType::Trash, Alert {}));
     }
 }
