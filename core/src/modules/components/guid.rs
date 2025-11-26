@@ -1,13 +1,11 @@
-use serde::{Serialize, Serializer};
+use serde::Serialize;
+use uuid::Uuid;
 
-#[derive(Clone, Copy)]
-pub struct Guid(pub u128);
+#[derive(Clone, Copy, Serialize)]
+pub struct Guid(pub Uuid);
 
-impl Serialize for Guid {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        serializer.serialize_str(&self.0.to_string())
+impl Guid {
+    pub fn new() -> Self {
+        Guid(Uuid::new_v4())
     }
 }

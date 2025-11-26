@@ -1,5 +1,3 @@
-use rand;
-
 use crate::defines::{MapSize, MinMax};
 use crate::modules::components::{EntityType, Force, Guid, Health, MaxSpeed, Pos, Rot, UnitState, Velocity};
 use crate::modules::markers::{Vehicle};
@@ -46,7 +44,7 @@ impl Core {
     }
 
     pub fn create_vehicle(&mut self, pos: Pos) -> Result<(), String> {
-        let guid = Guid(rand::random::<u128>());
+        let guid = Guid::new();
         self.world.spawn((
             guid,
             pos,
