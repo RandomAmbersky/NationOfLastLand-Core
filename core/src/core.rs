@@ -3,6 +3,7 @@ use crate::modules::components::{EntityType, Force, Guid, Health, MaxSpeed, Pos,
 use crate::modules::markers::{Vehicle};
 
 use crate::modules::exporter::export_to_json;
+use crate::modules::setup;
 use crate::modules::state::State;
 use crate::modules::world_state::WorldState;
 use crate::modules::systems::ai_vehicle::ai_vehicle_system;
@@ -14,6 +15,7 @@ pub struct Core {
     ws: WorldState,
     r: RandomGenerator,
     s: State,
+    setup: setup::Setup,
 }
 
 impl Default for Core {
@@ -26,6 +28,7 @@ impl Core {
     pub fn new() -> Self {
         let world = World::new();
         let s = State::new();
+        let setup = setup::new();
         let r = RandomGenerator {
             toxic_health: MinMax { max: 5.0, min: 1.0 },
             size: MapSize {
@@ -36,7 +39,7 @@ impl Core {
 
         let ws = WorldState::default();
 
-        let mut c = Core { world, ws, s, r };
+        let mut c = Core { world, ws, s, r, setup };
 
         c.init_world();
         c
@@ -73,7 +76,7 @@ impl Core {
 
     pub fn update(&mut self, delta: f64) -> Result<(), String> {
         // Run AI system to process waiting vehicles and assign targets
-        ai_vehicle_system(&mut self.world, &self.ws);
+        ai_vehicle_system(&mut self.world, &self.ws, &self.setup.spatial);
 
         // Increment time
         self.s.time += delta;

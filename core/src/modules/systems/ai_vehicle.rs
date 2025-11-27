@@ -3,11 +3,12 @@ use crate::modules::components::{
     EntityType, UnitState, MaxSpeed, TargetId, Velocity, Guid
 };
 use crate::modules::markers::Vehicle;
+use crate::modules::setup::Spatial;
 use crate::modules::world_state::WorldState;
 
 use hecs::World;
 
-fn move_vehicles(world: &mut World, ws: &WorldState) {
+fn move_vehicles(world: &mut World, ws: &WorldState, spatial: &Spatial) {
     // First, collect all moving vehicles' data with target positions
     let mut moving_vehicles = Vec::new();
 
@@ -34,8 +35,7 @@ fn move_vehicles(world: &mut World, ws: &WorldState) {
         let distance_squared = dx * dx + dy * dy;
 
         // Threshold to consider reached, e.g., 1.0 units
-        const THRESHOLD: f32 = 0.1;
-        if distance_squared < THRESHOLD * THRESHOLD {
+        if distance_squared < spatial.threshold * spatial.threshold {
             // Arrived at target: set position to target and reset velocity to zero
             if let Ok(pos) = world.query_one_mut::<&mut Pos>(entity) {
                 *pos = target_pos;
@@ -114,10 +114,10 @@ fn attack_vehicles(_world: &mut World) {
 }
 
 /// System that processes vehicles waiting for targets, assigns nearest waste, and changes their state
-pub fn ai_vehicle_system(world: &mut World, ws: &WorldState) {
+pub fn ai_vehicle_system(world: &mut World, ws: &WorldState, spatial: &Spatial) {
     set_target_to_waiting_vehicles(world);
 
-    move_vehicles(world, ws);
+    move_vehicles(world, ws, spatial);
 
     attack_vehicles(world);
 }
