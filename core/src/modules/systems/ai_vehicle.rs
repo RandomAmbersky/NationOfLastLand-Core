@@ -1,6 +1,6 @@
 use crate::modules::components::Pos;
 use crate::modules::components::{
-    EntityType, MaxSpeed, TargetId, Velocity, Guid
+    EntityType, MaxSpeed, TargetId, Velocity, Guid, Target
 };
 use crate::modules::markers::{Vehicle, IsMoving, WaitingTarget, Stopped};
 use crate::modules::setup::Spatial;
@@ -56,40 +56,44 @@ fn move_vehicles(world: &mut World, ws: &WorldState, spatial: &Spatial) {
 fn set_target_to_waiting_vehicles(world: &mut World) {
     // First, precompute all waste infos
     let mut trash_infos = Vec::new();
-    for (_entity, (pos, unit_type, guid)) in world.query::<(&Pos, &EntityType, &Guid)>().iter() {
+    for (entity, (pos, unit_type, guid)) in world.query::<(&Pos, &EntityType, &Guid)>().iter() {
         if *unit_type == EntityType::Trash {
-            trash_infos.push((*guid, *pos));
+            trash_infos.push((entity, *guid, *pos));
         }
     }
 
     // Then, collect all vehicle entities that are waiting for targets and their nearest waste
-    let mut waiting_entities: Vec<(hecs::Entity, TargetId)> = Vec::new();
+    let mut waiting_entities: Vec<(hecs::Entity, TargetId, Target)> = Vec::new();
 
     for (entity, (pos, _vehicle, _waiting)) in
         world.query::<(&Pos, &Vehicle, &WaitingTarget)>()
         .iter()
     {
-        // Find nearest trash by Guid
+        // Find nearest trash by Entity and Guid
         let mut min_dist_sq = f32::INFINITY;
         let mut nearest_guid = None;
-        for (guid, tpos) in &trash_infos {
-            let dx = tpos.x - pos.x;
-            let dy = tpos.y - pos.y;
+        let mut nearest_entity = None;
+        for &(t_entity, t_guid, t_pos) in &trash_infos {
+            let dx = t_pos.x - pos.x;
+            let dy = t_pos.y - pos.y;
             let dist_sq = dx * dx + dy * dy;
             if dist_sq < min_dist_sq {
                 min_dist_sq = dist_sq;
-                nearest_guid = Some(*guid);
+                nearest_guid = Some(t_guid);
+                nearest_entity = Some(t_entity);
             }
         }
-        if let Some(ng) = nearest_guid {
+        if let (Some(ng), Some(ne)) = (nearest_guid, nearest_entity) {
             // Assign target
-            let target = TargetId(ng);
-            waiting_entities.push((entity, target));
+            let target_id = TargetId(ng);
+            let target = Target(ne);
+            waiting_entities.push((entity, target_id, target));
         }
     }
 
-    // Now add TargetId components to the entities and change state
-    for (entity, target) in waiting_entities {
+    // Now add TargetId and Target components to the entities and change state
+    for (entity, target_id, target) in waiting_entities {
+        world.insert_one(entity, target_id).unwrap();
         world.insert_one(entity, target).unwrap();
         world.insert_one(entity, IsMoving {}).unwrap();
         world.remove_one::<WaitingTarget>(entity).unwrap();
