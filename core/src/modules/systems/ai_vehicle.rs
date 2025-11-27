@@ -5,46 +5,61 @@ use crate::modules::components::{
 use crate::modules::markers::Vehicle;
 use crate::modules::world_state::WorldState;
 
-use hecs::World;
+use hecs::{World, Query};
 
 fn move_vehicles(world: &mut World, ws: &WorldState) {
-    // Query for vehicles that are moving and update their velocity and position
-    for (_entity, (pos, target_id, velocity, max_speed, unit_state)) in world
-        .query_mut::<(&mut Pos, &TargetId, &mut Velocity, &MaxSpeed, &mut UnitState)>()
+    // First, collect all moving vehicles' data with target positions
+    let mut moving_vehicles = Vec::new();
+    for (entity, (pos, target_id, velocity, max_speed, unit_state)) in world
+        .query::<(&Pos, &TargetId, &Velocity, &MaxSpeed, &UnitState)>()
+        .iter()
     {
         if *unit_state == UnitState::IsMoving {
             // Find target position by Guid through entity
             if let Some(target_entity) = ws.guid_to_entity.get(&target_id.0) {
                 if let Ok(mut query) = world.query_one::<&Pos>(*target_entity) {
                     if let Some(target_pos) = query.get() {
-                        let target_pos = *target_pos;
-                        let dx = target_pos.x - pos.x;
-                        let dy = target_pos.y - pos.y;
-                        let distance_squared = dx * dx + dy * dy;
-
-                        // Threshold to consider reached, e.g., 1.0 units
-                        const THRESHOLD: f32 = 0.1;
-                        if distance_squared < THRESHOLD * THRESHOLD {
-                            // Arrived at target
-                            // Set position to target and reset velocity to zero
-                            pos.x = target_pos.x;
-                            pos.y = target_pos.y;
-                            velocity.x = 0.0;
-                            velocity.y = 0.0;
-                            *unit_state = UnitState::IsStopped;
-                        } else {
-                            // Compute direction and set velocity
-                            let distance = distance_squared.sqrt();
-                            let dir_x = dx / distance;
-                            let dir_y = dy / distance;
-                            velocity.x = dir_x * max_speed.value;
-                            velocity.y = dir_y * max_speed.value;
-                            // Move the vehicle
-                            pos.x += velocity.x;
-                            pos.y += velocity.y;
-                        }
+                        moving_vehicles.push((entity, *pos, *target_pos, *velocity, *max_speed));
                     }
                 }
+            }
+        }
+    }
+
+    // Then, update the moving vehicles
+    for (entity, pos, target_pos, _velocity, max_speed) in moving_vehicles {
+        let dx = target_pos.x - pos.x;
+        let dy = target_pos.y - pos.y;
+        let distance_squared = dx * dx + dy * dy;
+
+        // Threshold to consider reached, e.g., 1.0 units
+        const THRESHOLD: f32 = 0.1;
+        if distance_squared < THRESHOLD * THRESHOLD {
+            // Arrived at target: set position to target and reset velocity to zero
+            if let Ok(pos) = world.query_one_mut::<&mut Pos>(entity) {
+                *pos = target_pos;
+            }
+            if let Ok(velocity) = world.query_one_mut::<&mut Velocity>(entity) {
+                velocity.x = 0.0;
+                velocity.y = 0.0;
+            }
+            if let Ok(state) = world.query_one_mut::<&mut UnitState>(entity) {
+                *state = UnitState::IsStopped;
+            }
+        } else {
+            // Move towards target: compute direction and set velocity
+            let distance = distance_squared.sqrt();
+            let dir_x = dx / distance;
+            let dir_y = dy / distance;
+            let new_vel_x = dir_x * max_speed.value;
+            let new_vel_y = dir_y * max_speed.value;
+            if let Ok(velocity) = world.query_one_mut::<&mut Velocity>(entity) {
+                velocity.x = new_vel_x;
+                velocity.y = new_vel_y;
+            }
+            if let Ok(pos) = world.query_one_mut::<&mut Pos>(entity) {
+                pos.x += new_vel_x;
+                pos.y += new_vel_y;
             }
         }
     }
