@@ -10,6 +10,7 @@ use hecs::World;
 fn move_vehicles(world: &mut World, ws: &WorldState) {
     // First, collect all moving vehicles' data with target positions
     let mut moving_vehicles = Vec::new();
+
     for (entity, (pos, target_id, velocity, max_speed, unit_state)) in world
         .query::<(&Pos, &TargetId, &Velocity, &MaxSpeed, &UnitState)>()
         .iter()
