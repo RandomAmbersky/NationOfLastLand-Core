@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Clone, Copy, Serialize, Deserialize, Default)]
+#[derive(Clone, Copy, Serialize, Deserialize, Default, Debug, PartialEq, Eq, Hash)]
 pub struct Guid(pub Uuid);
 
 impl Guid {

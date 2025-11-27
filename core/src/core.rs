@@ -34,7 +34,7 @@ impl Core {
             },
         };
 
-        let ws = WorldState{};
+        let ws = WorldState::default();
 
         let mut c = Core { world, ws, s, r };
 
