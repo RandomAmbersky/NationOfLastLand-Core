@@ -4,12 +4,14 @@ use crate::modules::markers::{Vehicle};
 
 use crate::modules::exporter::export_to_json;
 use crate::modules::state::State;
+use crate::modules::world_state::WorldState;
 use crate::modules::systems::ai_vehicle::ai_vehicle_system;
 use crate::random_generator::RandomGenerator;
 use hecs::World;
 
 pub struct Core {
     world: World,
+    ws: WorldState,
     r: RandomGenerator,
     s: State,
 }
@@ -32,7 +34,9 @@ impl Core {
             },
         };
 
-        let mut c = Core { world, s, r };
+        let ws = WorldState{};
+
+        let mut c = Core { world, ws, s, r };
 
         c.init_world();
         c
