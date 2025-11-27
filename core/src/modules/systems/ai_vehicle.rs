@@ -1,28 +1,26 @@
 use crate::modules::components::Pos;
 use crate::modules::components::{
-    EntityType, UnitState, MaxSpeed, TargetId, Velocity, Guid
+    EntityType, MaxSpeed, TargetId, Velocity, Guid
 };
-use crate::modules::markers::Vehicle;
+use crate::modules::markers::{Vehicle, IsMoving, WaitingTarget, Stopped};
 use crate::modules::setup::Spatial;
 use crate::modules::world_state::WorldState;
 
-use hecs::World;
+use hecs::{Query, World};
 
 fn move_vehicles(world: &mut World, ws: &WorldState, spatial: &Spatial) {
     // First, collect all moving vehicles' data with target positions
     let mut moving_vehicles = Vec::new();
 
-    for (entity, (pos, target_id, velocity, max_speed, unit_state)) in world
-        .query::<(&Pos, &TargetId, &Velocity, &MaxSpeed, &UnitState)>()
+    for (entity, (pos, target_id, velocity, max_speed, _)) in world
+        .query::<(&Pos, &TargetId, &Velocity, &MaxSpeed, &IsMoving)>()
         .iter()
     {
-        if *unit_state == UnitState::IsMoving {
-            // Find target position by Guid through entity
-            if let Some(target_entity) = ws.guid_to_entity.get(&target_id.0) {
-                if let Ok(mut query) = world.query_one::<&Pos>(*target_entity) {
-                    if let Some(target_pos) = query.get() {
-                        moving_vehicles.push((entity, *pos, *target_pos, *velocity, *max_speed));
-                    }
+        // Find target position by Guid through entity
+        if let Some(target_entity) = ws.guid_to_entity.get(&target_id.0) {
+            if let Ok(mut query) = world.query_one::<&Pos>(*target_entity) {
+                if let Some(target_pos) = query.get() {
+                    moving_vehicles.push((entity, *pos, *target_pos, *velocity, *max_speed));
                 }
             }
         }
@@ -37,16 +35,18 @@ fn move_vehicles(world: &mut World, ws: &WorldState, spatial: &Spatial) {
         // Threshold to consider reached, e.g., 1.0 units
         if distance_squared < spatial.threshold * spatial.threshold {
             // Arrived at target: set position to target and reset velocity to zero
-            if let Ok(pos) = world.query_one_mut::<&mut Pos>(entity) {
-                *pos = target_pos;
+            if let Ok(mut query) = world.query_one_mut::<&mut Pos>(entity) {
+                if let Some(p) = query.get() {
+                    *p = target_pos;
+                }
             }
-            if let Ok(velocity) = world.query_one_mut::<&mut Velocity>(entity) {
-                velocity.x = 0.0;
-                velocity.y = 0.0;
+            if let Ok(mut query) = world.query_one_mut::<&mut Velocity>(entity) {
+                if let Some(v) = query.get() {
+                    *v = Velocity { x: 0.0, y: 0.0 };
+                }
             }
-            if let Ok(state) = world.query_one_mut::<&mut UnitState>(entity) {
-                *state = UnitState::IsStopped;
-            }
+            world.insert_one(entity, Stopped {}).unwrap();
+            world.remove_one::<IsMoving>(entity).unwrap();
         } else {
             // Move towards target: compute direction and set velocity
             let distance = distance_squared.sqrt();
@@ -54,13 +54,17 @@ fn move_vehicles(world: &mut World, ws: &WorldState, spatial: &Spatial) {
             let dir_y = dy / distance;
             let new_vel_x = dir_x * max_speed.value;
             let new_vel_y = dir_y * max_speed.value;
-            if let Ok(velocity) = world.query_one_mut::<&mut Velocity>(entity) {
-                velocity.x = new_vel_x;
-                velocity.y = new_vel_y;
+            if let Ok(mut query) = world.query_one_mut::<&mut Velocity>(entity) {
+                if let Some(v) = query.get() {
+                    v.x = new_vel_x;
+                    v.y = new_vel_y;
+                }
             }
-            if let Ok(pos) = world.query_one_mut::<&mut Pos>(entity) {
-                pos.x += new_vel_x;
-                pos.y += new_vel_y;
+            if let Ok(mut query) = world.query_one_mut::<&mut Pos>(entity) {
+                if let Some(p) = query.get() {
+                    p.x += new_vel_x;
+                    p.y += new_vel_y;
+                }
             }
         }
     }
@@ -78,34 +82,34 @@ fn set_target_to_waiting_vehicles(world: &mut World) {
     // Then, collect all vehicle entities that are waiting for targets and their nearest waste
     let mut waiting_entities: Vec<(hecs::Entity, TargetId)> = Vec::new();
 
-    for (entity, (pos, _vehicle, unit_state)) in
-        world.query_mut::<(&Pos, &Vehicle, &mut UnitState)>()
+    for (entity, (pos, _vehicle, _waiting)) in
+        world.query::<(&Pos, &Vehicle, &WaitingTarget)>()
+        .iter()
     {
-        if *unit_state == UnitState::IsWaitingTarget {
-            // Find nearest trash by Guid
-            let mut min_dist_sq = f32::INFINITY;
-            let mut nearest_guid = None;
-            for (guid, tpos) in &trash_infos {
-                let dx = tpos.x - pos.x;
-                let dy = tpos.y - pos.y;
-                let dist_sq = dx * dx + dy * dy;
-                if dist_sq < min_dist_sq {
-                    min_dist_sq = dist_sq;
-                    nearest_guid = Some(*guid);
-                }
+        // Find nearest trash by Guid
+        let mut min_dist_sq = f32::INFINITY;
+        let mut nearest_guid = None;
+        for (guid, tpos) in &trash_infos {
+            let dx = tpos.x - pos.x;
+            let dy = tpos.y - pos.y;
+            let dist_sq = dx * dx + dy * dy;
+            if dist_sq < min_dist_sq {
+                min_dist_sq = dist_sq;
+                nearest_guid = Some(*guid);
             }
-            if let Some(ng) = nearest_guid {
-                // Assign target
-                let target = TargetId(ng);
-                waiting_entities.push((entity, target));
-                *unit_state = UnitState::IsMoving;
-            }
+        }
+        if let Some(ng) = nearest_guid {
+            // Assign target
+            let target = TargetId(ng);
+            waiting_entities.push((entity, target));
         }
     }
 
-    // Now add TargetId components to the entities
+    // Now add TargetId components to the entities and change state
     for (entity, target) in waiting_entities {
         world.insert_one(entity, target).unwrap();
+        world.insert_one(entity, IsMoving {}).unwrap();
+        world.remove_one::<WaitingTarget>(entity).unwrap();
     }
 }
 
