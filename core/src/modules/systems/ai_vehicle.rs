@@ -5,7 +5,7 @@ use crate::modules::components::{
 use crate::modules::markers::Vehicle;
 use crate::modules::world_state::WorldState;
 
-use hecs::{World, Query};
+use hecs::World;
 
 fn move_vehicles(world: &mut World, ws: &WorldState) {
     // First, collect all moving vehicles' data with target positions
