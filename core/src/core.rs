@@ -73,7 +73,7 @@ impl Core {
 
     pub fn update(&mut self, delta: f64) -> Result<(), String> {
         // Run AI system to process waiting vehicles and assign targets
-        ai_vehicle_system(&mut self.world);
+        ai_vehicle_system(&mut self.world, &self.ws);
 
         // Increment time
         self.s.time += delta;

@@ -3,11 +3,12 @@ use crate::modules::components::{
     EntityType, UnitState, MaxSpeed, TargetId, Velocity, Guid
 };
 use crate::modules::markers::Vehicle;
+use crate::modules::world_state::WorldState;
 use std::collections::HashMap;
 
 use hecs::World;
 
-fn move_vehicles(world: &mut World) {
+fn move_vehicles(world: &mut World, ws: &WorldState) {
     // Precompute Guid to Pos map
     let mut guid_to_pos = HashMap::new();
     for (_e, (g, p)) in world.query::<(&Guid, &Pos)>().iter() {
@@ -20,8 +21,7 @@ fn move_vehicles(world: &mut World) {
     {
         if *unit_state == UnitState::IsMoving {
             // Find target position by Guid
-            let target_pos_opt = guid_to_pos.get(&target_id.0).copied();
-            if let Some(target_pos) = target_pos_opt {
+            if let Some(target_pos) = guid_to_pos.get(&target_id.0).copied() {
                 let dx = target_pos.x - pos.x;
                 let dy = target_pos.y - pos.y;
                 let distance_squared = dx * dx + dy * dy;
@@ -100,10 +100,10 @@ fn attack_vehicles(_world: &mut World) {
 }
 
 /// System that processes vehicles waiting for targets, assigns nearest waste, and changes their state
-pub fn ai_vehicle_system(world: &mut World) {
+pub fn ai_vehicle_system(world: &mut World, ws: &WorldState) {
     set_target_to_waiting_vehicles(world);
 
-    move_vehicles(world);
+    move_vehicles(world, ws);
 
     attack_vehicles(world);
 }
