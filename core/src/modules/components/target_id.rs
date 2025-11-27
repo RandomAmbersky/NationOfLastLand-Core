@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
+use crate::modules::components::Guid;
+
 #[derive(Serialize, Deserialize, Clone, Copy, Default)]
-pub struct TargetId {
-    pub value: u32,
-}
+pub struct TargetId(pub Guid);
