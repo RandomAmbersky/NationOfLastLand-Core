@@ -25,4 +25,4 @@ pub use force::Force;
 pub use guid::Guid;
 pub use weapon_mode::WeaponMode;
 pub use weapon::Weapon;
-pub use item_slot_type::ItemSlotType;
+pub use item_slot_type::ActiveItemSlotType;
