@@ -1,15 +1,24 @@
 items:
   ITEM_CLEANER:
     attack_types:
-      - type: DMG_CLEAN
-        damage: 10.0
+      ATTACK_CLEAN:
+        - type: DMG_CLEAN
+          damage: 10.0
   ITEM_BRUSH:
     attack_types:
-      - type: DMG_CLEAN
-        damage: 1.0
+      ATTACK_CLEAN:
+        - type: DMG_CLEAN
+          damage: 1.0
   ITEM_ACID_CLEANER:
     attack_types:
-      - type: DMG_CLEAN
-        damage: 1.0
-      - type: DMG_ACID
-        damage: 1.0
+      ATTACK_COMBO:
+        - type: DMG_CLEAN
+          damage: 1.0
+        - type: DMG_ACID
+          damage: 1.0
+      ATTACK_ACID:
+        - type: DMG_ACID
+          damage: 1.0
+      ATTACK_CLEAN:
+        - type: DMG_CLEAN
+          damage: 1.0
