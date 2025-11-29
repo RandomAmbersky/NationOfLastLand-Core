@@ -104,6 +104,7 @@ impl Core {
     fn load(&mut self) -> Result<(), serde_yaml::Error> {
         let config: DamageTypesConfig = serde_yaml::from_str(DAMAGE_TYPES_YAML)?;
         self.descriptions.damage_types = config.damage_types;
+        self.descriptions.items = crate::descriptions::load_items_static().unwrap_or_default();
         Ok(())
     }
 }
