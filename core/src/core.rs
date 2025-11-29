@@ -1,7 +1,7 @@
 use crate::defines::MinMax;
+use crate::descriptions::{Descriptions, load_damage_types_static, load_items_static};
 use crate::modules::components::{EntityType, Force, Guid, Health, MaxSpeed, Pos, Rot, Velocity};
-use crate::descriptions::{Descriptions, load_damage_types_static};
-use crate::modules::markers::{Vehicle, IsWaitingTarget};
+use crate::modules::markers::{IsWaitingTarget, Vehicle};
 
 use crate::modules::exporter::export_to_json;
 use crate::modules::setup;
@@ -35,9 +35,16 @@ impl Core {
         let r = RandomGenerator {
             toxic_health: MinMax { max: 5.0, min: 1.0 },
         };
+
         let descriptions = Descriptions::default();
 
-        let mut c = Core { world, s, r, setup, descriptions };
+        let mut c = Core {
+            world,
+            s,
+            r,
+            setup,
+            descriptions,
+        };
 
         c.load().expect("Failed to load damage types");
 
@@ -45,7 +52,10 @@ impl Core {
         c
     }
 
-    pub fn spawn_entity(&mut self, bundle: impl hecs::Bundle + Send + Sync + 'static) -> hecs::Entity {
+    pub fn spawn_entity(
+        &mut self,
+        bundle: impl hecs::Bundle + Send + Sync + 'static,
+    ) -> hecs::Entity {
         let guid = Guid::new();
         let entity = self.world.spawn(bundle);
         self.world.insert_one(entity, guid).unwrap();
@@ -64,7 +74,10 @@ impl Core {
             Rot { x: 0.0, y: 0.0 },
             MaxSpeed { value: 0.1 },
             Velocity { x: 0.0, y: 0.0 },
-            Health { current: 5.0, max: 5.0 },
+            Health {
+                current: 5.0,
+                max: 5.0,
+            },
             Force(100.0),
             IsWaitingTarget {},
             EntityType::Vehicle,
@@ -97,7 +110,7 @@ impl Core {
 
     fn load(&mut self) -> Result<(), serde_yaml::Error> {
         self.descriptions.damage_types = load_damage_types_static(DAMAGE_TYPES_YAML)?;
-        self.descriptions.items = crate::descriptions::load_items_static(ITEMS_YAML).unwrap_or_default();
+        self.descriptions.items = load_items_static(ITEMS_YAML).unwrap_or_default();
         Ok(())
     }
 }
