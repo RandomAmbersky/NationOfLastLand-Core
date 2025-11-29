@@ -49,3 +49,24 @@ pub struct Descriptions {
     /// Список типов повреждений
     pub damage_types: Vec<String>,
 }
+
+impl Descriptions {
+    /// Валидирует соответствия attack_types.type из предметов с damage_types
+    pub fn validate_attack_types(&self) -> Result<(), Box<dyn Error>> {
+        let valid_damage_types: std::collections::HashSet<&String> =
+            self.damage_types.iter().collect();
+
+        for (item_name, item) in &self.items {
+            for attack in &item.attack_types {
+                if !valid_damage_types.contains(&attack.attack_type) {
+                    return Err(format!(
+                        "Invalid attack type '{}' in item '{}'. Must match one of: {:?}",
+                        attack.attack_type, item_name, self.damage_types
+                    ).into());
+                }
+            }
+        }
+
+        Ok(())
+    }
+}
