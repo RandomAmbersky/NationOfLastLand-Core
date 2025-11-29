@@ -18,14 +18,14 @@ pub struct ItemsContainer {
 pub struct ItemYaml {
     #[serde(rename = "type")]
     item_type: String,
-    attack_types: Vec<AttackTypeYaml>,
+    pub attack_types: Vec<AttackTypeYaml>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct AttackTypeYaml {
     #[serde(rename = "type")]
-    attack_type: String,
-    damage: f64,
+    pub attack_type: String,
+    pub damage: f64,
 }
 
 /// Функция для десериализации damage_types из статической строки YAML
