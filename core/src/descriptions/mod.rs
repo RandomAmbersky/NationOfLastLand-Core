@@ -41,8 +41,8 @@ pub struct AttackTypeYaml {
 /// Статические данные предметов из items.yml теперь в core.rs
 
 /// Функция для получения предметов из статических данных
-pub fn load_items_static() -> Result<HashMap<String, String>, Box<dyn Error>> {
-    let data: ItemsYaml = serde_yaml::from_str(crate::ITEMS_YAML)?;
+pub fn load_items_static(yaml: &str) -> Result<HashMap<String, String>, Box<dyn Error>> {
+    let data: ItemsYaml = serde_yaml::from_str(yaml)?;
     let mut items = HashMap::new();
     for item in data.items {
         let description = format!("Атаки: {}", item.attack_types.iter()

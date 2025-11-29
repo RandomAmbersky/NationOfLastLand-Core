@@ -18,7 +18,7 @@ struct DamageTypesConfig {
 }
 
 const DAMAGE_TYPES_YAML: &str = include_str!("../../data/damage_types.yml");
-pub const ITEMS_YAML: &str = include_str!("../../data/items.yml");
+const ITEMS_YAML: &str = include_str!("../../data/items.yml");
 
 pub struct Core {
     world: World,
@@ -105,7 +105,7 @@ impl Core {
     fn load(&mut self) -> Result<(), serde_yaml::Error> {
         let config: DamageTypesConfig = serde_yaml::from_str(DAMAGE_TYPES_YAML)?;
         self.descriptions.damage_types = config.damage_types;
-        self.descriptions.items = crate::descriptions::load_items_static().unwrap_or_default();
+        self.descriptions.items = crate::descriptions::load_items_static(ITEMS_YAML).unwrap_or_default();
         Ok(())
     }
 }
