@@ -17,7 +17,7 @@ pub struct ItemsContainer {
 #[derive(Deserialize, Debug)]
 pub struct ItemYaml {
     #[serde(rename = "type")]
-    item_type: String,
+    pub item_type: String,
     pub attack_types: Vec<AttackTypeYaml>,
 }
 
@@ -35,9 +35,19 @@ pub fn load_damage_types_static(yaml: &str) -> Result<Vec<String>, Box<dyn Error
 }
 
 /// Функция для получения предметов из статических данных
+/// Кастомно импортирует из последовательности в HashMap
 pub fn load_items_static(yaml: &str) -> Result<ItemsContainer, Box<dyn Error>> {
-    let container: ItemsContainer = serde_yaml::from_str(yaml)?;
-    Ok(container)
+    let raw: std::collections::HashMap<String, serde_yaml::Value> = serde_yaml::from_str(yaml)?;
+    if let Some(serde_yaml::Value::Sequence(seq)) = raw.get("items") {
+        let mut map = HashMap::new();
+        for value in seq {
+            let item: ItemYaml = serde_yaml::from_value(value.clone())?;
+            map.insert(item.item_type.clone(), item);
+        }
+        Ok(ItemsContainer { items: map })
+    } else {
+        Err("Expected items as sequence".into())
+    }
 }
 
 /// Компонент для хранения базовых описаний различных юнитов, алертов и предметов
