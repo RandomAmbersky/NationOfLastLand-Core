@@ -10,18 +10,18 @@ pub struct DamageTypesYaml {
 
 /// Структура для десериализации файла items.yml
 #[derive(Deserialize)]
-pub struct ItemsYaml {
+pub struct ItemsContainer {
     items: Vec<ItemYaml>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct ItemYaml {
     #[serde(rename = "type")]
     item_type: String,
     attack_types: Vec<AttackTypeYaml>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct AttackTypeYaml {
     #[serde(rename = "type")]
     attack_type: String,
@@ -35,19 +35,11 @@ pub fn load_damage_types_static(yaml: &str) -> Result<Vec<String>, Box<dyn Error
 }
 
 /// Функция для получения предметов из статических данных
-pub fn load_items_static(yaml: &str) -> Result<HashMap<String, String>, Box<dyn Error>> {
-    let data: ItemsYaml = serde_yaml::from_str(yaml)?;
+pub fn load_items_static(yaml: &str) -> Result<HashMap<String, ItemYaml>, Box<dyn Error>> {
+    let container: ItemsContainer = serde_yaml::from_str(yaml)?;
     let mut items = HashMap::new();
-    for item in data.items {
-        let description = format!(
-            "Атаки: {}",
-            item.attack_types
-                .iter()
-                .map(|at| format!("{} (урон: {})", at.attack_type, at.damage))
-                .collect::<Vec<_>>()
-                .join(", ")
-        );
-        items.insert(item.item_type, description);
+    for item in container.items {
+        items.insert(item.item_type.clone(), item);
     }
     Ok(items)
 }
@@ -59,8 +51,8 @@ pub struct Descriptions {
     pub units: HashMap<String, String>,
     /// Описания алертов, где ключ - тип алерта, значение - описание
     pub alerts: HashMap<String, String>,
-    /// Описания предметов, где ключ - название предмета, значение - описание
-    pub items: HashMap<String, String>,
+    /// Предметы, где ключ - название предмета, значение - данные предмета
+    pub items: HashMap<String, ItemYaml>,
     /// Список типов повреждений
     pub damage_types: Vec<String>,
 }
