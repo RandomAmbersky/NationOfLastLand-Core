@@ -38,12 +38,11 @@ pub struct AttackTypeYaml {
     damage: f64,
 }
 
-/// Статические данные предметов из items.yml
-pub const ITEMS_YAML: &str = include_str!("../../../data/items.yml");
+/// Статические данные предметов из items.yml теперь в core.rs
 
 /// Функция для получения предметов из статических данных
 pub fn load_items_static() -> Result<HashMap<String, String>, Box<dyn Error>> {
-    let data: ItemsYaml = serde_yaml::from_str(ITEMS_YAML)?;
+    let data: ItemsYaml = serde_yaml::from_str(crate::ITEMS_YAML)?;
     let mut items = HashMap::new();
     for item in data.items {
         let description = format!("Атаки: {}", item.attack_types.iter()

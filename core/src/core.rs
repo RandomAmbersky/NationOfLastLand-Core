@@ -18,6 +18,7 @@ struct DamageTypesConfig {
 }
 
 const DAMAGE_TYPES_YAML: &str = include_str!("../../data/damage_types.yml");
+pub const ITEMS_YAML: &str = include_str!("../../data/items.yml");
 
 pub struct Core {
     world: World,
