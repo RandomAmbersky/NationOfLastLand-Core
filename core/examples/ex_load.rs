@@ -17,9 +17,12 @@ fn main() {
     println!("\nItems:");
     for (name, item) in &descriptions.items {
         println!("  {}:", name);
-        for attack_type in &item.attack_types {
-            println!("   attack_types:");
-            println!("    - {}: damage={}", attack_type.attack_type, attack_type.damage);
+        println!("    attack_types:");
+        for (attack_name, damages) in &item.attack_types {
+            println!("      {}:", attack_name);
+            for entry in damages {
+                println!("        - type: {}, damage={}", entry.attack_type, entry.damage);
+            }
         }
     }
 }

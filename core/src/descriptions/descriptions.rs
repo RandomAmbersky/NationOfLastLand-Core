@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use serde_yaml;
-use std::{collections::HashMap, error::Error};
+use std::{collections::{HashMap, HashSet}, error::Error};
 
 /// Структура для десериализации файла damage_types.yml
 #[derive(Deserialize)]
@@ -16,7 +16,7 @@ pub struct ItemsContainer {
 
 #[derive(Deserialize, Debug)]
 pub struct ItemYaml {
-    pub attack_types: Vec<ItemAttackTypeYaml>,
+    pub attack_types: HashMap<String, Vec<ItemAttackTypeYaml>>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -53,16 +53,18 @@ pub struct Descriptions {
 impl Descriptions {
     /// Валидирует соответствия attack_types.type из предметов с damage_types
     pub fn validate_attack_types(&self) -> Result<(), Box<dyn Error>> {
-        let valid_damage_types: std::collections::HashSet<&String> =
+        let valid_damage_types: HashSet<&String> =
             self.damage_types.iter().collect();
 
         for (item_name, item) in &self.items {
-            for attack in &item.attack_types {
-                if !valid_damage_types.contains(&attack.attack_type) {
-                    return Err(format!(
-                        "Invalid attack type '{}' in item '{}'. Must match one of: {:?}",
-                        attack.attack_type, item_name, self.damage_types
-                    ).into());
+            for (_attack_name, damages) in &item.attack_types {
+                for attack in damages {
+                    if !valid_damage_types.contains(&attack.attack_type) {
+                        return Err(format!(
+                            "Invalid attack type '{}' in item '{}'. Must match one of: {:?}",
+                            attack.attack_type, item_name, self.damage_types
+                        ).into());
+                    }
                 }
             }
         }
