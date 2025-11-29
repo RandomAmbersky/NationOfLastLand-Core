@@ -16,11 +16,11 @@ pub struct ItemsContainer {
 
 #[derive(Deserialize, Debug)]
 pub struct ItemYaml {
-    pub attack_types: Vec<AttackTypeYaml>,
+    pub attack_types: Vec<ItemAttackTypeYaml>,
 }
 
 #[derive(Deserialize, Debug)]
-pub struct AttackTypeYaml {
+pub struct ItemAttackTypeYaml {
     #[serde(rename = "type")]
     pub attack_type: String,
     pub damage: f64,

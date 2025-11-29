@@ -1,7 +1,7 @@
 
 mod spatial;
 mod reputation;
-mod hitpoints;
+mod health;
 mod target_id;
 mod target;
 mod entity_type;
@@ -15,7 +15,7 @@ mod item_slot_type;
 
 pub use spatial::{MaxSpeed, Pos, Rot, Velocity, TargetPos};
 pub use reputation::Reputation;
-pub use hitpoints::Health;
+pub use health::Health;
 pub use target_id::TargetId;
 pub use target::Target;
 pub use entity_type::EntityType;
