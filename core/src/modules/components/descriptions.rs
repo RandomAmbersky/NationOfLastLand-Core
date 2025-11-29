@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 /// Компонент для хранения базовых описаний различных юнитов, алертов и предметов
-#[derive(Clone, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct Descriptions {
     /// Описания юнитов, где ключ - название юнита, значение - описание
     pub units: HashMap<String, String>,
