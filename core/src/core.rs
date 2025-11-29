@@ -1,7 +1,7 @@
 use crate::defines::MinMax;
+use crate::descriptions::{Descriptions, load_damage_types_static, load_items_static};
 use crate::modules::components::{EntityType, Force, Guid, Health, MaxSpeed, Pos, Rot, Velocity};
-use crate::descriptions::Descriptions;
-use crate::modules::markers::{Vehicle, IsWaitingTarget};
+use crate::modules::markers::{IsWaitingTarget, Vehicle};
 
 use crate::modules::exporter::export_to_json;
 use crate::modules::setup;
@@ -9,15 +9,10 @@ use crate::modules::state::State;
 use crate::modules::systems::ai_vehicle::ai_vehicle_system;
 use crate::random_generator::RandomGenerator;
 use hecs::World;
-use serde::Deserialize;
-use serde_yaml;
-
-#[derive(Deserialize)]
-struct DamageTypesConfig {
-    damage_types: Vec<String>,
-}
+use std::error::Error;
 
 const DAMAGE_TYPES_YAML: &str = include_str!("../../data/damage_types.yml");
+const ITEMS_YAML: &str = include_str!("../../data/items.yml");
 
 pub struct Core {
     world: World,
@@ -43,7 +38,15 @@ impl Core {
         };
         let descriptions = Descriptions::default();
 
-        let mut c = Core { world, s, r, setup, descriptions };
+        let descriptions = Descriptions::default();
+
+        let mut c = Core {
+            world,
+            s,
+            r,
+            setup,
+            descriptions,
+        };
 
         c.load().expect("Failed to load damage types");
 
@@ -51,7 +54,10 @@ impl Core {
         c
     }
 
-    pub fn spawn_entity(&mut self, bundle: impl hecs::Bundle + Send + Sync + 'static) -> hecs::Entity {
+    pub fn spawn_entity(
+        &mut self,
+        bundle: impl hecs::Bundle + Send + Sync + 'static,
+    ) -> hecs::Entity {
         let guid = Guid::new();
         let entity = self.world.spawn(bundle);
         self.world.insert_one(entity, guid).unwrap();
@@ -70,7 +76,10 @@ impl Core {
             Rot { x: 0.0, y: 0.0 },
             MaxSpeed { value: 0.1 },
             Velocity { x: 0.0, y: 0.0 },
-            Health { current: 5.0, max: 5.0 },
+            Health {
+                current: 5.0,
+                max: 5.0,
+            },
             Force(100.0),
             IsWaitingTarget {},
             EntityType::Vehicle,
@@ -101,9 +110,9 @@ impl Core {
         export_to_json(&self.world, &self.s)
     }
 
-    fn load(&mut self) -> Result<(), serde_yaml::Error> {
-        let config: DamageTypesConfig = serde_yaml::from_str(DAMAGE_TYPES_YAML)?;
-        self.descriptions.damage_types = config.damage_types;
+    fn load(&mut self) -> Result<(), Box<dyn Error>> {
+        self.descriptions.damage_types = load_damage_types_static(DAMAGE_TYPES_YAML)?;
+        self.descriptions.items = load_items_static(ITEMS_YAML).unwrap_or_default();
         Ok(())
     }
 }
