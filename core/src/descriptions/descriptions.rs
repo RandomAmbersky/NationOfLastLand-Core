@@ -16,9 +16,19 @@ pub struct ItemsContainer {
 
 #[derive(Deserialize, Debug)]
 pub struct ItemYaml {
-    #[serde(rename = "type")]
-    pub item_type: String,
     pub attack_types: Vec<AttackTypeYaml>,
+}
+
+impl ItemYaml {
+    pub fn to_weapon_type(&self, range: f32) -> crate::modules::components::WeaponType {
+        use crate::modules::components::{WeaponMode, WeaponType};
+        let modes = self.attack_types.iter().map(|at| WeaponMode {
+            damage_type: at.attack_type.clone(),
+            damage: at.damage as i32,
+            range,
+        }).collect();
+        WeaponType { modes }
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -35,19 +45,8 @@ pub fn load_damage_types_static(yaml: &str) -> Result<Vec<String>, Box<dyn Error
 }
 
 /// Функция для получения предметов из статических данных
-/// Кастомно импортирует из последовательности в HashMap
 pub fn load_items_static(yaml: &str) -> Result<ItemsContainer, Box<dyn Error>> {
-    let raw: std::collections::HashMap<String, serde_yaml::Value> = serde_yaml::from_str(yaml)?;
-    if let Some(serde_yaml::Value::Sequence(seq)) = raw.get("items") {
-        let mut map = HashMap::new();
-        for value in seq {
-            let item: ItemYaml = serde_yaml::from_value(value.clone())?;
-            map.insert(item.item_type.clone(), item);
-        }
-        Ok(ItemsContainer { items: map })
-    } else {
-        Err("Expected items as sequence".into())
-    }
+    Ok(serde_yaml::from_str(yaml)?)
 }
 
 /// Компонент для хранения базовых описаний различных юнитов, алертов и предметов

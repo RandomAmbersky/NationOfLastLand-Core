@@ -16,7 +16,7 @@ fn main() {
     // Вывод предметов
     println!("\nItems:");
     for (name, item) in &descriptions.items {
-        println!("  {} (type: {}):", name, item.item_type);
+        println!("  {}:", name);
         for attack_type in &item.attack_types {
             println!("    - {}: damage={}", attack_type.attack_type, attack_type.damage);
         }

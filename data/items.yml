@@ -1,13 +1,13 @@
 items:
-  - type: CLEANER
+  ITM_CLEANER:
     attack_types:
       - type: DMG_CLEAN
         damage: 10.0
-  - type: BRUSH
+  ITM_BRUSH:
     attack_types:
       - type: DMG_CLEAN
         damage: 1.0
-  - type: ACID_CLEANER
+  ITM_ACID_CLEANER:
     attack_types:
       - type: DMG_CLEAN
         damage: 1.0

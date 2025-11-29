@@ -3,7 +3,7 @@ use rand::Rng;
 use crate::{
     defines::{MapSize, MinMax},
     modules::{
-        components::{DamageType, EntityType, Health, Pos, Resistance},
+        components::{EntityType, Health, Pos, Resistance},
         markers::{Alert}
     },
 };
@@ -37,7 +37,7 @@ impl RandomGenerator {
         let pos = generate_random_pos(map_size);
         let health = generate_between(&self.toxic_health);
         let mut resistance = Resistance::default();
-        resistance.resistances.insert(DamageType::Physical, 0.0);
+        resistance.resistances.insert("Physical".to_string(), 0.0);
         (pos, Health { current: health, max: health }, EntityType::Trash, Alert {}, resistance)
     }
 }
