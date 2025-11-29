@@ -32,8 +32,8 @@ fn move_vehicles(world: &mut World, spatial: &Spatial) {
                 let distance = distance_squared.sqrt();
                 let dir_x = dx / distance;
                 let dir_y = dy / distance;
-                let new_vel_x = dir_x * max_speed.value;
-                let new_vel_y = dir_y * max_speed.value;
+                let new_vel_x = dir_x * max_speed.0;
+                let new_vel_y = dir_y * max_speed.0;
                 velocity.x = new_vel_x;
                 velocity.y = new_vel_y;
                 pos.x += new_vel_x;

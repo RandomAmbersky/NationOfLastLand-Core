@@ -72,7 +72,7 @@ impl Core {
         self.spawn_entity((
             pos,
             Rot { x: 0.0, y: 0.0 },
-            MaxSpeed { value: 0.1 },
+            MaxSpeed(0.1),
             Velocity { x: 0.0, y: 0.0 },
             Health {
                 current: 5.0,
