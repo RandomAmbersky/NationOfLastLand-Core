@@ -110,7 +110,7 @@ impl Core {
 
     fn load(&mut self) -> Result<(), Box<dyn Error>> {
         self.descriptions.damage_types = load_damage_types_static(DAMAGE_TYPES_YAML)?;
-        self.descriptions.items = load_items_static(ITEMS_YAML).unwrap_or_default();
+        self.descriptions.items = load_items_static(ITEMS_YAML)?.items;
         Ok(())
     }
 }

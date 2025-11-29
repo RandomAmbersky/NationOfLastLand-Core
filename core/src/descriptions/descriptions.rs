@@ -11,7 +11,7 @@ pub struct DamageTypesYaml {
 /// Структура для десериализации файла items.yml
 #[derive(Deserialize)]
 pub struct ItemsContainer {
-    items: Vec<ItemYaml>,
+    pub items: HashMap<String, ItemYaml>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -35,13 +35,9 @@ pub fn load_damage_types_static(yaml: &str) -> Result<Vec<String>, Box<dyn Error
 }
 
 /// Функция для получения предметов из статических данных
-pub fn load_items_static(yaml: &str) -> Result<HashMap<String, ItemYaml>, Box<dyn Error>> {
+pub fn load_items_static(yaml: &str) -> Result<ItemsContainer, Box<dyn Error>> {
     let container: ItemsContainer = serde_yaml::from_str(yaml)?;
-    let mut items = HashMap::new();
-    for item in container.items {
-        items.insert(item.item_type.clone(), item);
-    }
-    Ok(items)
+    Ok(container)
 }
 
 /// Компонент для хранения базовых описаний различных юнитов, алертов и предметов
