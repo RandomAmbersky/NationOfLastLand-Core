@@ -9,6 +9,15 @@ use crate::modules::state::State;
 use crate::modules::systems::ai_vehicle::ai_vehicle_system;
 use crate::random_generator::RandomGenerator;
 use hecs::World;
+use serde::Deserialize;
+use serde_yaml;
+
+#[derive(Deserialize)]
+struct DamageTypesConfig {
+    damage_types: Vec<String>,
+}
+
+const DAMAGE_TYPES_YAML: &str = include_str!("../../data/damage_types.yml");
 
 pub struct Core {
     world: World,
@@ -35,6 +44,8 @@ impl Core {
         let descriptions = Descriptions::default();
 
         let mut c = Core { world, s, r, setup, descriptions };
+
+        c.load().expect("Failed to load damage types");
 
         c.init_world();
         c
@@ -88,6 +99,12 @@ impl Core {
 
     pub fn export_world(&self) -> String {
         export_to_json(&self.world, &self.s)
+    }
+
+    fn load(&mut self) -> Result<(), serde_yaml::Error> {
+        let config: DamageTypesConfig = serde_yaml::from_str(DAMAGE_TYPES_YAML)?;
+        self.descriptions.damage_types = config.damage_types;
+        Ok(())
     }
 }
 

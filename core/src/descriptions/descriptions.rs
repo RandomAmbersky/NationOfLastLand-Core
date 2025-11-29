@@ -9,4 +9,6 @@ pub struct Descriptions {
     pub alerts: HashMap<String, String>,
     /// Описания предметов, где ключ - название предмета, значение - описание
     pub items: HashMap<String, String>,
+    /// Список типов повреждений
+    pub damage_types: Vec<String>,
 }
