@@ -18,6 +18,7 @@ fn main() {
     for (name, item) in &descriptions.items {
         println!("  {}:", name);
         for attack_type in &item.attack_types {
+            println!("   attack_types:");
             println!("    - {}: damage={}", attack_type.attack_type, attack_type.damage);
         }
     }
