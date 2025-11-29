@@ -1,21 +1,9 @@
 pub mod descriptions;
-pub use descriptions::Descriptions;
+pub use descriptions::{Descriptions, load_damage_types_static};
 
 use serde::Deserialize;
 use serde_yaml;
 use std::{collections::HashMap, error::Error};
-
-/// Структура для десериализации файла damage_types.yml
-#[derive(Deserialize)]
-pub struct DamageTypesYaml {
-    damage_types: Vec<String>,
-}
-
-/// Функция для десериализации damage_types из статической строки YAML
-pub fn load_damage_types_static(yaml: &str) -> Result<Vec<String>, serde_yaml::Error> {
-    let data: DamageTypesYaml = serde_yaml::from_str(yaml)?;
-    Ok(data.damage_types)
-}
 
 /// Структура для десериализации файла items.yml
 #[derive(Deserialize)]
