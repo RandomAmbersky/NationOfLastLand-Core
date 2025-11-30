@@ -34,14 +34,28 @@ pub struct ItemAttackTypeYaml {
     pub damage: f64,
 }
 
-/// Структура для десериализации файла vehicles.yml
+/// Структура для десериализации файла vehicles.yml (список)
 #[derive(Deserialize)]
+struct VehiclesYaml {
+    vehicles: Vec<VehicleYaml>,
+}
+
+/// Структура для хранения транспортных средств
+#[derive(Debug, Default)]
 pub struct VehiclesContainer {
-    pub vehicles: HashMap<String, VehicleYaml>,
+    pub vehicles: HashMap<String, VehicleData>,
 }
 
 #[derive(Deserialize, Debug)]
-pub struct VehicleYaml {
+pub struct VehicleData {
+    pub max_speed: f32,
+    pub health: HealthYaml,
+}
+
+#[derive(Deserialize)]
+struct VehicleYaml {
+    #[serde(rename = "type")]
+    pub vehicle_type: String,
     pub max_speed: f32,
     pub health: HealthYaml,
 }
@@ -68,9 +82,18 @@ pub fn load_items_static(yaml: &str) -> Result<ItemsContainer, Box<dyn Error>> {
     Ok(ItemsContainer { items: items_map })
 }
 
-/// Функция для получения транспортных средств из статических данных
+    /// Функция для получения транспортных средств из статических данных
 pub fn load_vehicles_static(yaml: &str) -> Result<VehiclesContainer, Box<dyn Error>> {
-    Ok(serde_yaml::from_str(yaml)?)
+    let yaml_data: VehiclesYaml = serde_yaml::from_str(yaml)?;
+    let mut vehicles_map = HashMap::new();
+    for vehicle in yaml_data.vehicles {
+        let data = VehicleData {
+            max_speed: vehicle.max_speed,
+            health: vehicle.health,
+        };
+        vehicles_map.insert(vehicle.vehicle_type, data);
+    }
+    Ok(VehiclesContainer { vehicles: vehicles_map })
 }
 
 /// Компонент для хранения базовых описаний различных юнитов, алертов и предметов
@@ -83,7 +106,7 @@ pub struct Descriptions {
     /// Предметы, где ключ - название предмета, значение - данные предмета
     pub items: HashMap<String, ItemYaml>,
     /// Транспортные средства, где ключ - название транспорта, значение - данные транспорта
-    pub vehicles: HashMap<String, VehicleYaml>,
+    pub vehicles: HashMap<String, VehicleData>,
     /// Список типов повреждений
     pub damage_types: Vec<String>,
 }

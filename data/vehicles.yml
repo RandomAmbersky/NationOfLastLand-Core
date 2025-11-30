@@ -1,6 +1,6 @@
 vehicles:
-- type: VEHICLE_CAR:
+- type: VEHICLE_CAR
   max_speed: 1.0
-  health: 
+  health:
     current: 5.0
     max: 5.0
