@@ -1,0 +1,39 @@
+use serde::Deserialize;
+use serde_yaml;
+use std::{collections::HashMap, error::Error};
+
+/// Структура для десериализации файла vehicles.yml (список)
+#[derive(Deserialize)]
+struct VehiclesYaml {
+    vehicles: Vec<VehicleYaml>,
+}
+
+/// Структура для хранения транспортных средств
+#[derive(Debug, Default)]
+pub struct VehiclesContainer {
+    pub vehicles: HashMap<String, VehicleYaml>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct VehicleYaml {
+    #[serde(rename = "type")]
+    pub vehicle_type: String,
+    pub max_speed: f32,
+    pub health: HealthYaml,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct HealthYaml {
+    pub current: f32,
+    pub max: f32,
+}
+
+/// Функция для получения транспортных средств из статических данных
+pub fn load_vehicles_static(yaml: &str) -> Result<VehiclesContainer, Box<dyn Error>> {
+    let yaml_data: VehiclesYaml = serde_yaml::from_str(yaml)?;
+    let mut vehicles_map = HashMap::new();
+    for vehicle in yaml_data.vehicles {
+        vehicles_map.insert(vehicle.vehicle_type.clone(), vehicle);
+    }
+    Ok(VehiclesContainer { vehicles: vehicles_map })
+}

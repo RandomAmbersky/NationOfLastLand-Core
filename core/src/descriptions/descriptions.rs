@@ -1,98 +1,14 @@
-use serde::Deserialize;
-use serde_yaml;
+// Re-export для обратной совместимости или удобства
+pub use super::*;
 use std::{collections::{HashMap, HashSet}, error::Error};
-
-/// Структура для десериализации файла damage_types.yml
-#[derive(Deserialize)]
-pub struct DamageTypesYaml {
-    damage_types: Vec<String>,
-}
-
-/// Структура для десериализации файла items.yml (список)
-#[derive(Deserialize)]
-struct ItemsYaml {
-    items: Vec<ItemYaml>,
-}
-
-/// Структура для хранения предметов
-#[derive(Debug, Default)]
-pub struct ItemsContainer {
-    pub items: HashMap<String, ItemYaml>,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct ItemYaml {
-    #[serde(rename = "type")]
-    pub item_type: String,
-    pub attack_types: HashMap<String, Vec<ItemAttackTypeYaml>>,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct ItemAttackTypeYaml {
-    #[serde(rename = "type")]
-    pub attack_type: String,
-    pub damage: f64,
-}
-
-/// Структура для десериализации файла vehicles.yml (список)
-#[derive(Deserialize)]
-struct VehiclesYaml {
-    vehicles: Vec<VehicleYaml>,
-}
-
-/// Структура для хранения транспортных средств
-#[derive(Debug, Default)]
-pub struct VehiclesContainer {
-    pub vehicles: HashMap<String, VehicleYaml>,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct VehicleYaml {
-    #[serde(rename = "type")]
-    pub vehicle_type: String,
-    pub max_speed: f32,
-    pub health: HealthYaml,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct HealthYaml {
-    pub current: f32,
-    pub max: f32,
-}
-
-/// Функция для десериализации damage_types из статической строки YAML
-pub fn load_damage_types_static(yaml: &str) -> Result<Vec<String>, Box<dyn Error>> {
-    let data: DamageTypesYaml = serde_yaml::from_str(yaml)?;
-    Ok(data.damage_types)
-}
-
-/// Функция для получения предметов из статических данных
-pub fn load_items_static(yaml: &str) -> Result<ItemsContainer, Box<dyn Error>> {
-    let yaml_data: ItemsYaml = serde_yaml::from_str(yaml)?;
-    let mut items_map = HashMap::new();
-    for item in yaml_data.items {
-        items_map.insert(item.item_type.clone(), item);
-    }
-    Ok(ItemsContainer { items: items_map })
-}
-
-    /// Функция для получения транспортных средств из статических данных
-pub fn load_vehicles_static(yaml: &str) -> Result<VehiclesContainer, Box<dyn Error>> {
-    let yaml_data: VehiclesYaml = serde_yaml::from_str(yaml)?;
-    let mut vehicles_map = HashMap::new();
-    for vehicle in yaml_data.vehicles {
-        vehicles_map.insert(vehicle.vehicle_type.clone(), vehicle);
-    }
-    Ok(VehiclesContainer { vehicles: vehicles_map })
-}
 
 /// Компонент для хранения базовых описаний различных юнитов, алертов и предметов
 #[derive(Debug, Default)]
 pub struct Descriptions {
     /// Описания юнитов, где ключ - название юнита, значение - описание
-    pub units: HashMap<String, String>,
+    pub units: UnitsDescriptions,
     /// Описания алертов, где ключ - тип алерта, значение - описание
-    pub alerts: HashMap<String, String>,
+    pub alerts: AlertsDescriptions,
     /// Предметы, где ключ - название предмета, значение - данные предмета
     pub items: HashMap<String, ItemYaml>,
     /// Транспортные средства, где ключ - название транспорта, значение - данные транспорта
