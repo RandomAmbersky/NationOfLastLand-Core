@@ -94,9 +94,8 @@ impl Core {
                 Rot { x: 0.0, y: 0.0 },
                 MaxSpeed(vehicle_data.max_speed),
                 Velocity { x: 0.0, y: 0.0 },
-                Health {
-                    current: vehicle_data.health.current,
-                    max: vehicle_data.health.max,
+                Health{
+                    ..vehicle_data.health
                 },
                 Force(100.0),
                 IsWaitingTarget {},
@@ -117,8 +116,7 @@ impl Core {
                 MaxSpeed(vehicle_data.max_speed),
                 Velocity { x: 0.0, y: 0.0 },
                 Health {
-                    current: vehicle_data.health.current,
-                    max: vehicle_data.health.max,
+                    ..vehicle_data.health
                 },
                 Force(100.0),
                 IsWaitingTarget {},

@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use serde_yaml;
+use crate::modules::components::Health;
 use std::{collections::HashMap, error::Error};
 
 /// Структура для десериализации файла vehicles.yml (список)
@@ -19,13 +20,7 @@ pub struct VehicleYaml {
     #[serde(rename = "type")]
     pub vehicle_type: String,
     pub max_speed: f32,
-    pub health: HealthYaml,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct HealthYaml {
-    pub current: f32,
-    pub max: f32,
+    pub health: Health,
 }
 
 /// Функция для получения транспортных средств из статических данных
