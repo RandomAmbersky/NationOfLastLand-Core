@@ -92,7 +92,7 @@ impl Core {
             self.spawn_entity((
                 pos,
                 Rot { x: 0.0, y: 0.0 },
-                MaxSpeed(vehicle_data.max_speed),
+                MaxSpeed(vehicle_data.max_speed.0),
                 Velocity { x: 0.0, y: 0.0 },
                 Health{
                     ..vehicle_data.health
@@ -113,7 +113,7 @@ impl Core {
             self.spawn_entity((
                 pos,
                 Rot { x: 0.0, y: 0.0 },
-                MaxSpeed(vehicle_data.max_speed),
+                MaxSpeed(vehicle_data.max_speed.0),
                 Velocity { x: 0.0, y: 0.0 },
                 Health {
                     ..vehicle_data.health
