@@ -69,27 +69,6 @@ impl Core {
         Ok(())
     }
 
-    pub fn create_vehicle_car(&mut self, pos: Pos) -> Result<(), String> {
-        if let Some(vehicle_data) = self.descriptions.vehicles.get("VEHICLE_CAR") {
-            self.spawn_entity((
-                pos,
-                Rot { x: 0.0, y: 0.0 },
-                MaxSpeed(vehicle_data.max_speed.0),
-                Velocity { x: 0.0, y: 0.0 },
-                Health{
-                    ..vehicle_data.health
-                },
-                Force(100.0),
-                IsWaitingTarget {},
-                EntityType::Vehicle,
-                Vehicle {},
-            ));
-            Ok(())
-        } else {
-            Err("Vehicle 'VEHICLE_CAR' not found in descriptions".to_string())
-        }
-    }
-
     pub fn create_vehicle_from_yaml(&mut self, vehicle_key: &str, pos: Pos) -> Result<(), String> {
         if let Some(vehicle_data) = self.descriptions.vehicles.get(vehicle_key) {
             self.spawn_entity((
