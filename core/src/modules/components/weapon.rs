@@ -1,6 +1,8 @@
-use super::weapon_mode::WeaponMode;
+use hecs::Entity;
+use crate::modules::components::WeaponType;
 
 #[derive(Clone, Debug)]
-pub struct WeaponType {
-    pub modes: Vec<WeaponMode>,
+pub struct Weapon {
+    pub owner: Option<Entity>,
+    pub weapon_type: WeaponType
 }

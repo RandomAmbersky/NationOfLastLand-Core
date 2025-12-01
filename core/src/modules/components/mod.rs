@@ -10,6 +10,7 @@ mod resistance;
 mod force;
 mod guid;
 mod weapon_mode;
+mod weapon_type;
 mod weapon;
 mod item_slot_type;
 
@@ -24,5 +25,6 @@ pub use resistance::Resistance;
 pub use force::Force;
 pub use guid::Guid;
 pub use weapon_mode::WeaponMode;
-pub use weapon::WeaponType;
+pub use weapon_type::WeaponType;
+pub use weapon::Weapon;
 pub use item_slot_type::ActiveItemSlotType;
