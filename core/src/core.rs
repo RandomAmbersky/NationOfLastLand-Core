@@ -1,6 +1,6 @@
 use crate::defines::MinMax;
 use crate::descriptions::{Descriptions, load_damage_types_static, load_items_static, load_vehicles_static};
-use crate::modules::components::{EntityType, Force, Guid, Pos, Rot, Velocity};
+use crate::modules::components::{EntityType, Force, Guid, Pos, Rot, Velocity, WeaponType, WeaponMode};
 use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
 
 use crate::modules::exporter::export_to_json;
@@ -89,10 +89,22 @@ impl Core {
     }
 
     pub fn create_item_from_yaml(&mut self, item_key: &str, pos: Pos) -> Result<(), String> {
-        if self.descriptions.items.contains_key(item_key) {
+        if let Some(item_data) = self.descriptions.items.get(item_key) {
+            let mut modes = Vec::new();
+            for attack_type_list in item_data.attack_types.values() {
+                for attack in attack_type_list {
+                    modes.push(WeaponMode {
+                        damage_type: attack.attack_type.clone(),
+                        damage: attack.damage as i32,
+                        range: 1.0,
+                    });
+                }
+            }
+            let weapon_type = WeaponType { modes };
             self.spawn_entity((
                 pos,
                 Rot { x: 0.0, y: 0.0 },
+                weapon_type,
                 Velocity { x: 0.0, y: 0.0 },
                 EntityType::Item,
                 Item {},
