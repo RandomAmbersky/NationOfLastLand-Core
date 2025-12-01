@@ -97,3 +97,47 @@ Vehicle -> ActiveItemSloth
                 Vehicle {},
             ));
 ```
+
+## вот нейросетка подсказала организацию vehicle
+
+vehicle:
+  name: "Heavy Assault Walker"
+  weapon_slots:
+    - id: "main_left"
+      slot_type: "main"
+      mount_point: "left_arm"
+      allowed_weapons: ["plasma_cannon", "railgun"]
+    - id: "main_right"
+      slot_type: "main"
+      mount_point: "right_arm"
+      allowed_weapons: ["plasma_cannon", "flamethrower"]
+    - id: "aux_top"
+      slot_type: "auxiliary"
+      mount_point: "shoulder"
+      allowed_weapons: ["missile_pod", "sensor_dart"]
+
+## вот что насчет монтирования оружия:
+
+// Шаблон оружия из YAML
+#[derive(serde::Deserialize)]
+struct WeaponTemplate {
+    name: String,
+    damage: f32,
+    ammo_capacity: u32,
+}
+
+// При создании машины:
+let vehicle = world.spawn((Transform::default(), Health::new(100)));
+
+// Создаём оружие как отдельную сущность
+let weapon = world.spawn((
+    WeaponStats { damage: 25.0, fire_rate: 10.0 },
+    Ammo { current: 30, max: 30 },
+    MountedOn { parent: vehicle, slot: "main_left".to_string() },
+    Transform::default(), // будет обновляться относительно машины
+));
+
+// И связываем с машиной — либо через компонент на машине, либо через запрос по MountedOn
+world.insert_one(vehicle, WeaponMounts {
+    slots: [("main_left".to_string(), Some(weapon))].into(),
+});
