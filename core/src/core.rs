@@ -105,7 +105,6 @@ impl Core {
                 pos,
                 Rot { x: 0.0, y: 0.0 },
                 weapon_type,
-                Velocity { x: 0.0, y: 0.0 },
                 EntityType::Item,
                 Item {},
             ));
