@@ -24,6 +24,9 @@ fn main() {
                 println!("        - type: {}, damage={}", entry.attack_type, entry.damage);
             }
         }
+        if let Some(throwable) = item.throwable {
+            println!("    throwable: {}", throwable);
+        }
     }
 
     // Вывод транспортных средств

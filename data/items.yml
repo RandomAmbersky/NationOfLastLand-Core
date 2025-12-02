@@ -1,5 +1,6 @@
 items:
 - type: BRIFCASE
+  throwable: ~
 - type: ITEM_CLEANER
   attack_types:
     ATTACK_CLEAN:

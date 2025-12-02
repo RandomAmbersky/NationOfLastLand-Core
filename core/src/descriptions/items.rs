@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 use serde_yaml;
 use std::{collections::HashMap, error::Error};
 
@@ -20,6 +20,8 @@ pub struct ItemYaml {
     pub item_type: String,
     #[serde(default)]
     pub attack_types: HashMap<String, Vec<ItemAttackTypeYaml>>,
+    #[serde(default, deserialize_with = "deserialize_throwable")]
+    pub throwable: Option<bool>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -27,6 +29,16 @@ pub struct ItemAttackTypeYaml {
     #[serde(rename = "type")]
     pub attack_type: String,
     pub damage: f64,
+}
+
+fn deserialize_throwable<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    // Since this function is only called if the field is present, return Some(true)
+    // Consume the value to complete the deserialization
+    let _ : Option<serde_yaml::Value> = Option::deserialize(deserializer)?;
+    Ok(Some(true))
 }
 
 /// Функция для получения предметов из статических данных
