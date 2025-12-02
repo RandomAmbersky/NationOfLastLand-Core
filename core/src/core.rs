@@ -1,6 +1,6 @@
 use crate::defines::MinMax;
 use crate::descriptions::{Descriptions, load_damage_types_static, load_items_static, load_vehicles_static};
-use crate::modules::components::{ActiveSlots, EntityType, Force, Guid, Health, MaxSpeed, Pos, Rot, SlotType, Velocity, WeaponMode, WeaponType};
+use crate::modules::components::{ActiveSlots, BaseType, EntityType, Force, Guid, Health, MaxSpeed, Pos, Rot, SlotType, Velocity, WeaponMode, WeaponType};
 use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
 
 use crate::modules::exporter::export_to_json;
@@ -73,6 +73,7 @@ impl Core {
         if let Some(vehicle_data_ref) = self.descriptions.vehicles.get(vehicle_key) {
             let vehicle_data = vehicle_data_ref.clone();
             let e = self.spawn_entity((
+                BaseType(vehicle_key.to_owned()),
                 pos,
                 Rot { x: 0.0, y: 0.0 },
                 MaxSpeed(vehicle_data.max_speed),
