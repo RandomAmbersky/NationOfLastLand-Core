@@ -27,7 +27,7 @@ pub struct VehicleYaml {
     pub vehicle_type: String,
     pub max_speed: f32,
     pub max_health: f32,
-    #[serde(rename = "active_sloth")]
+    #[serde(rename = "active_slot")]
     pub active_slot: Vec<Slot>,
 }
 

@@ -63,7 +63,7 @@ CleanAttack: {
        power
 }
 
-Vehicle -> ActiveItemSloth
+Vehicle -> ActiveItemSlot
               <VehicleSlot_1, Option(Item)>
               <VehicleSlot_2, Option(Item)>
               <VehicleSlot_3, Option(Item)>
