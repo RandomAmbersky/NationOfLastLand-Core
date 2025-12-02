@@ -104,6 +104,7 @@ impl Core {
                 }
             }
             let e = self.spawn_entity((
+                BaseType(item_key.to_string()),
                 EntityType::Item,
                 Item {},
             ));
