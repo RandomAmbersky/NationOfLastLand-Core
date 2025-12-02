@@ -1,6 +1,6 @@
 use crate::defines::MinMax;
 use crate::descriptions::{Descriptions, load_damage_types_static, load_items_static, load_vehicles_static};
-use crate::modules::components::{ActiveSlots, BaseType, EntityType, Force, Guid, Health, MaxSpeed, Pos, Rot, SlotType, Velocity, WeaponMode, WeaponType};
+use crate::modules::components::{ActiveSlots, BaseType, EntityType, Force, Guid, Health, MaxSpeed, Owner, Pos, Rot, SlotType, Velocity, WeaponMode, WeaponType};
 use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
 
 use crate::modules::exporter::export_to_json;
@@ -148,6 +148,35 @@ impl Core {
 
     pub fn get_descriptions_mut(&mut self) -> &mut Descriptions {
         &mut self.descriptions
+    }
+
+    pub fn attach(&mut self, vehicle: Entity, item: Entity, slot_id: &str) -> Result<(), String> {
+        // Check if slot exists on vehicle
+        let has_slot = {
+            let query_result = self.world.query_one::<&ActiveSlots>(vehicle);
+            if let Ok(mut query) = query_result {
+                if let Some(active_slots) = query.get() {
+                    active_slots.slots.iter().any(|slot| slot.id == slot_id)
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
+        };
+
+        if has_slot {
+            // Check if item is an item
+            if self.world.get::<&Item>(item).is_ok() {
+                // Insert Owner component to item
+                self.world.insert_one(item, Owner(vehicle)).map_err(|_| "Failed to insert Owner component".to_string())?;
+                Ok(())
+            } else {
+                Err("Entity is not an item".to_string())
+            }
+        } else {
+            Err(format!("Slot '{}' not found on vehicle", slot_id))
+        }
     }
 
     pub fn export_world(&self, is_pretty: bool) -> String {
