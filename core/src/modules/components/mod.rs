@@ -15,6 +15,7 @@ mod item_slot_type;
 mod active_slots;
 mod owner;
 mod base_type;
+mod attached_items;
 
 pub use spatial::{MaxSpeed, Pos, Rot, Velocity, TargetPos};
 pub use reputation::Reputation;
@@ -32,3 +33,4 @@ pub use item_slot_type::ActiveItemSlotType;
 pub use active_slots::{ActiveSlots, SlotType, ActiveSlot};
 pub use owner::Owner;
 pub use base_type::BaseType;
+pub use attached_items::AttachedItems;

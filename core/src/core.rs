@@ -1,6 +1,6 @@
 use crate::defines::MinMax;
 use crate::descriptions::{Descriptions, load_damage_types_static, load_items_static, load_vehicles_static};
-use crate::modules::components::{BaseType, EntityType, Force, Guid, Health, MaxSpeed, Owner, Pos, Rot, Velocity, WeaponMode, WeaponType};
+use crate::modules::components::{AttachedItems, BaseType, EntityType, Force, Guid, Health, MaxSpeed, Owner, Pos, Rot, Velocity, WeaponMode, WeaponType};
 use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
 
 use crate::modules::exporter::{export_to_json, export_entity_to_json};
@@ -161,6 +161,16 @@ impl Core {
             if self.world.get::<&Item>(item).is_ok() {
                 // Insert Owner component to item
                 self.world.insert_one(item, Owner(vehicle)).map_err(|_| "Failed to insert Owner component".to_string())?;
+
+                // Add reference to item in vehicle's AttachedItems
+                self.world.insert_one(vehicle, AttachedItems::new()).map_err(|_| "Failed to insert AttachedItems component".to_string())?;
+                if let Ok(mut query) = self.world.query_one::<&mut AttachedItems>(vehicle) {
+                    let attached_items = query.get().unwrap();
+                    attached_items.attach(slot_id, item);
+                } else {
+                    return Err("Failed to query AttachedItems on vehicle".to_string());
+                }
+
                 Ok(())
             } else {
                 Err("Entity is not an item".to_string())
