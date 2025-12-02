@@ -1,7 +1,9 @@
 items:
 - type: BRIFCASE
   throwable: ~
+  takeable: ~
 - type: ITEM_CLEANER
+  takeable: ~
   attack_types:
     ATTACK_CLEAN:
       - type: DMG_CLEAN

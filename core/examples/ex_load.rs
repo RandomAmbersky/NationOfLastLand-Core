@@ -27,6 +27,9 @@ fn main() {
         if let Some(throwable) = item.throwable {
             println!("    throwable: {}", throwable);
         }
+        if let Some(takeable) = item.takeable {
+            println!("    takeable: {}", takeable);
+        }
     }
 
     // Вывод транспортных средств

@@ -20,8 +20,10 @@ pub struct ItemYaml {
     pub item_type: String,
     #[serde(default)]
     pub attack_types: HashMap<String, Vec<ItemAttackTypeYaml>>,
-    #[serde(default, deserialize_with = "deserialize_throwable")]
+    #[serde(default, deserialize_with = "deserialize_marker")]
     pub throwable: Option<bool>,
+    #[serde(default, deserialize_with = "deserialize_marker")]
+    pub takeable: Option<bool>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -31,7 +33,7 @@ pub struct ItemAttackTypeYaml {
     pub damage: f64,
 }
 
-fn deserialize_throwable<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
+fn deserialize_marker<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
 where
     D: Deserializer<'de>,
 {
