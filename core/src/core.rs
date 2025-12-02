@@ -1,6 +1,6 @@
 use crate::defines::MinMax;
 use crate::descriptions::{Descriptions, load_damage_types_static, load_items_static, load_vehicles_static};
-use crate::modules::components::{EntityType, Force, Guid, Health, Pos, Rot, Velocity, WeaponType, WeaponMode, ActiveSlots, SlotType};
+use crate::modules::components::{ActiveSlots, EntityType, Force, Guid, Health, MaxSpeed, Pos, Rot, SlotType, Velocity, WeaponMode, WeaponType};
 use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
 
 use crate::modules::exporter::export_to_json;
@@ -75,7 +75,7 @@ impl Core {
             let e = self.spawn_entity((
                 pos,
                 Rot { x: 0.0, y: 0.0 },
-                vehicle_data.max_speed,
+                MaxSpeed(vehicle_data.max_speed),
                 Velocity { x: 0.0, y: 0.0 },
                 Health { current: vehicle_data.max_health, max: vehicle_data.max_health },
                 Force(100.0),
