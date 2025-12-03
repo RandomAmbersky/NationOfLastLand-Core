@@ -92,10 +92,30 @@ fn set_target_to_waiting_vehicles(world: &mut World) {
     }
 }
 
-fn attack_vehicles(_world: &mut World) {
-    // let mut attacking_entities: Vec<(hecs::Entity, TargetId, Target)> = Vec::new();
-    // IsTargetNear
-    
+fn attack_vehicles(world: &mut World) {
+    let mut targets_to_despawn = Vec::new();
+    let mut entities_to_reset = Vec::new();
+
+    for (entity, (_, _, target)) in world
+        .query::<(&IsTargetNear, &Vehicle, &Target)>()
+        .iter()
+    {
+        entities_to_reset.push(entity);
+        targets_to_despawn.push(target.0);
+    }
+
+    // Despawn targets
+    for target_entity in targets_to_despawn {
+        world.despawn(target_entity).unwrap();
+    }
+
+    // Reset vehicles to waiting state
+    for entity in entities_to_reset {
+        world.insert_one(entity, IsWaitingTarget {}).unwrap();
+        world.remove_one::<IsTargetNear>(entity).unwrap();
+        world.remove_one::<Target>(entity).unwrap();
+        world.remove_one::<TargetId>(entity).unwrap();
+    }
 }
 
 /// System that processes vehicles waiting for targets, assigns nearest waste, and changes their state
