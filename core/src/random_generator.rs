@@ -4,7 +4,7 @@ use crate::{
     defines::{MapSize, MinMax},
     modules::{
         components::{EntityType, Health, Pos, Resistance},
-        markers::{Alert}
+        markers::{Alert, Trash}
     },
 };
 
@@ -33,11 +33,11 @@ pub fn generate_random_pos(map_size: &MapSize) -> Pos {
 }
 
 impl RandomGenerator {
-    pub fn get_bundle_trash(&self, map_size: &MapSize) -> (Pos, Health, EntityType, Alert, Resistance) {
+    pub fn get_bundle_trash(&self, map_size: &MapSize) -> (Pos, Health, EntityType, Alert, Trash, Resistance) {
         let pos = generate_random_pos(map_size);
         let health = generate_between(&self.toxic_health);
         let mut resistance = Resistance::default();
         resistance.resistances.insert("Physical".to_string(), 0.0);
-        (pos, Health { current: health, max: health }, EntityType::Trash, Alert {}, resistance)
+        (pos, Health { current: health, max: health }, EntityType::Trash, Alert {}, Trash {}, resistance)
     }
 }
