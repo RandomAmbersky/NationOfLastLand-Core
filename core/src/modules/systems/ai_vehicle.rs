@@ -1,6 +1,6 @@
 use crate::modules::components::Pos;
 use crate::modules::components::{MaxSpeed, TargetId, Velocity, Guid, Target};
-use crate::modules::markers::{IsMoving, IsWaitingTarget, Stopped, Trash, Vehicle};
+use crate::modules::markers::{IsMoving, IsTargetNear, IsWaitingTarget, Stopped, Trash, Vehicle};
 use crate::modules::setup::Spatial;
 use hecs::World;
 
@@ -42,7 +42,7 @@ fn move_vehicles(world: &mut World, spatial: &Spatial) {
 
     // Change markers for stopped vehicles
     for entity in entities_to_stop {
-        world.insert_one(entity, Stopped {}).unwrap();
+        world.insert_one(entity, IsTargetNear {}).unwrap();
         world.remove_one::<IsMoving>(entity).unwrap();
     }
 }
@@ -93,7 +93,7 @@ fn set_target_to_waiting_vehicles(world: &mut World) {
 }
 
 fn attack_vehicles(_world: &mut World) {
-    let mut attacking_entities: Vec<(hecs::Entity, TargetId, Target)> = Vec::new();
+    // let mut attacking_entities: Vec<(hecs::Entity, TargetId, Target)> = Vec::new();
     
 }
 
