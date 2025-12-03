@@ -1,6 +1,6 @@
 use crate::modules::components::Pos;
 use crate::modules::components::{MaxSpeed, TargetId, Velocity, Guid, Target};
-use crate::modules::markers::{IsMoving, IsTargetNear, IsWaitingTarget, Stopped, Trash, Vehicle};
+use crate::modules::markers::{IsMoving, IsTargetNear, IsWaitingTarget, Trash, Vehicle};
 use crate::modules::setup::Spatial;
 use hecs::World;
 
