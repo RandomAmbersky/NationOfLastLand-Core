@@ -19,5 +19,5 @@ fn main() {
 
     // Экспорт item для проверки Owner
     let item_content = core.export_entity(item, true);
-    println!("Item content:\n{}", item_content);;
+    println!("Item content:\n{}", item_content);
 }
