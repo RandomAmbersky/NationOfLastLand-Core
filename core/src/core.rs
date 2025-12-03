@@ -204,6 +204,8 @@ impl Core {
         self.create_vehicle_from_yaml("VEHICLE_CAR", Pos { x: 1.0, y: 1.0 })
             .expect("Failed to create vehicle from YAML");
 
-        self.create_trash().expect("Failed to create waste");
+        for _ in 0..10 {
+            self.create_trash().expect("Failed to create waste");
+        }
     }
 }
