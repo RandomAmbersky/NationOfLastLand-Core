@@ -1,8 +1,14 @@
 use crate::modules::components::Pos;
-use crate::modules::components::{MaxSpeed, TargetId, Velocity, Guid, Target};
+use crate::modules::components::{MaxSpeed, TargetId, Velocity, Guid, Target, WeaponMode, ActiveSlots, AttachedItems, WeaponType};
 use crate::modules::markers::{IsMoving, IsTargetNear, IsWaitingTarget, Trash, Vehicle};
 use crate::modules::setup::Spatial;
-use hecs::World;
+use hecs::{Entity, World};
+
+#[derive(Clone, Debug)]
+pub struct AttackEvent {
+    pub weapon_mode: WeaponMode,
+    pub target_unit: Entity,
+}
 
 fn move_vehicles(world: &mut World, spatial: &Spatial) {
     let mut entities_to_stop = Vec::new();
@@ -93,29 +99,44 @@ fn set_target_to_waiting_vehicles(world: &mut World) {
 }
 
 fn attack_vehicles(world: &mut World) {
-    let mut targets_to_despawn = Vec::new();
-    let mut entities_to_reset = Vec::new();
+    let mut attack_vehicles: Vec<AttackEvent> = Vec::new();
 
-    for (entity, (_, _, target)) in world
-        .query::<(&IsTargetNear, &Vehicle, &Target)>()
+    // let mut entities_to_reset = Vec::new();
+
+    for (_entity, (_, _, target, active_slots, attached_items)) in world
+        .query::<(&IsTargetNear, &Vehicle, &Target, &ActiveSlots, &AttachedItems)>()
         .iter()
     {
-        entities_to_reset.push(entity);
-        targets_to_despawn.push(target.0);
+        for slot in &active_slots.slots {
+            if let Some(item_entity) = attached_items.get(&slot.id) {
+                if let Ok(mut query) = world.query_one::<(&WeaponType,)>(item_entity) {
+                    if let Some((weapon_type,)) = query.get() {
+                        for mode in &weapon_type.modes {
+                            attack_vehicles.push(AttackEvent {
+                                weapon_mode: mode.clone(),
+                                target_unit: target.0,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        // entities_to_reset.push(entity);
+        // targets_to_despawn.push(target.0);
     }
 
     // Despawn targets
-    for target_entity in targets_to_despawn {
-        world.despawn(target_entity).unwrap();
-    }
+    // for target_entity in targets_to_despawn {
+    //     world.despawn(target_entity).unwrap();
+    // }
 
     // Reset vehicles to waiting state
-    for entity in entities_to_reset {
-        world.insert_one(entity, IsWaitingTarget {}).unwrap();
-        world.remove_one::<IsTargetNear>(entity).unwrap();
-        world.remove_one::<Target>(entity).unwrap();
-        world.remove_one::<TargetId>(entity).unwrap();
-    }
+    // for entity in entities_to_reset {
+    //     world.insert_one(entity, IsWaitingTarget {}).unwrap();
+    //     world.remove_one::<IsTargetNear>(entity).unwrap();
+    //     world.remove_one::<Target>(entity).unwrap();
+    //     world.remove_one::<TargetId>(entity).unwrap();
+    // }
 }
 
 /// System that processes vehicles waiting for targets, assigns nearest waste, and changes their state
