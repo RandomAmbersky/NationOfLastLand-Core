@@ -1,7 +1,7 @@
-use serde::Serialize;
+use serde::{Deserialize};
 
 /// Тип слота
-#[derive(Clone, Copy, Debug, PartialEq, Serialize)]
+#[derive(Deserialize, Debug)]
 pub enum SlotType {
     Main,
     Auxiliary,
@@ -18,7 +18,7 @@ impl SlotType {
 }
 
 /// Структура для одного активного слота на транспортном средстве
-#[derive(Clone, Debug, Serialize)]
+#[derive(Deserialize, Debug)]
 pub struct ActiveSlot {
     pub id: String,
     pub slot_type: SlotType,
@@ -26,7 +26,7 @@ pub struct ActiveSlot {
 }
 
 /// Компонент для хранения активных слотов транспортного средства
-#[derive(Clone, Debug, Serialize)]
+#[derive(Deserialize, Debug)]
 pub struct ActiveSlots {
     pub slots: Vec<ActiveSlot>,
 }

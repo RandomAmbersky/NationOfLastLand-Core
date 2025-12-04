@@ -1,5 +1,5 @@
 use crate::modules::components::Pos;
-use crate::modules::components::{MaxSpeed, TargetId, Velocity, Guid, Target, WeaponMode, ActiveSlots, AttachedItems, WeaponType};
+use crate::modules::components::{MaxSpeed, TargetId, Velocity, Guid, Target, WeaponMode, AttachedItems, WeaponType};
 use crate::modules::markers::{IsMoving, IsTargetNear, IsWaitingTarget, Trash, Vehicle};
 use crate::modules::setup::Spatial;
 use hecs::{Entity, World};
@@ -103,8 +103,8 @@ fn attack_vehicles(world: &mut World) {
 
     // let mut entities_to_reset = Vec::new();
 
-    for (_entity, (_, _, target, active_slots, attached_items)) in world
-        .query::<(&IsTargetNear, &Vehicle, &Target, &ActiveSlots, &AttachedItems)>()
+    for (_entity, (_, _, target, attached_items)) in world
+        .query::<(&IsTargetNear, &Vehicle, &Target, &AttachedItems)>()
         .iter()
     {
         for slot in &active_slots.slots {
