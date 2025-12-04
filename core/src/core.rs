@@ -163,16 +163,15 @@ impl Core {
                 // Insert Owner component to item
                 self.world.insert_one(item, Owner(vehicle)).map_err(|_| "Failed to insert Owner component".to_string())?;
 
-                if !self.world.has::<AttachedItems>(vehicle) {
-                    self.world.insert_one(vehicle, AttachedItems::new()).map_err(|_| "Failed to insert AttachedItems component".to_string())?;
-                }
-
                 if let Ok(mut query) = self.world.query_one::<&mut AttachedItems>(vehicle) {
                     let attached_items = query.get().unwrap();
                     attached_items.attach(slot_id, item);
                 } else {
-                    return Err("Failed to query AttachedItems on vehicle".to_string());
-                }
+                    self.world.insert_one(vehicle, AttachedItems::new()).unwrap();
+                    let mut query = self.world.query_one::<&mut AttachedItems>(vehicle).unwrap();
+                    let attached_items = query.get().unwrap();
+                    attached_items.attach(slot_id, item);
+                };
 
                 Ok(())
             } else {
