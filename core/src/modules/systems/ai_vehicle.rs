@@ -123,7 +123,7 @@ fn attack_vehicles(world: &mut World, descriptions: &Descriptions) {
                         }
                     }
                 }
-            
+            }
         }
         // entities_to_reset.push(entity);
         // targets_to_despawn.push(target.0);
