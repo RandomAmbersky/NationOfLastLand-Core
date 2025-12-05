@@ -114,7 +114,13 @@ fn attack_vehicles(world: &mut World, descriptions: &Descriptions) {
                 // println!("{}", item_type);
                 if let Some(base_item) = descriptions.items.get(&item_type) {
                     for interaction in base_item.interactions.iter() {
-
+                        for (damage_type, damage) in interaction.action.iter() {
+                            let w = WeaponMode{ 
+                                *damage_type, *damage, 
+                                range: 0.0 };
+                            let a = AttackEvent { 
+                                weapon_mode: w, target_unit: target };
+                        }
                     }
                 }
             }
