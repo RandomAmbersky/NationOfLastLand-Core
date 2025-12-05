@@ -111,7 +111,8 @@ fn attack_vehicles(world: &mut World) {
         for (key, item_entity) in attached_items.0.iter() {
             if let Ok(item_type) = get_base_type(world, *item_entity) {
                 println!("{}", item_type);
-            } 
+            }
+
             // if let Ok(mut query) = world.query_one::<(&WeaponType,)>(*item_entity) {
             //     if let Some((weapon_type,)) = query.get() {
             //         for mode in &weapon_type.modes {
