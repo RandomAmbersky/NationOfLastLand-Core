@@ -103,8 +103,6 @@ fn set_target_to_waiting_vehicles(world: &mut World) {
 fn attack_vehicles(world: &mut World, descriptions: &Descriptions) {
     let mut attack_vehicles: Vec<AttackEvent> = Vec::new();
 
-    // let mut entities_to_reset = Vec::new();
-
     for (_entity, (_, _, target, attached_items)) in world
         .query::<(&IsTargetNear, &Vehicle, &Target, &AttachedItems)>()
         .iter()
@@ -125,18 +123,7 @@ fn attack_vehicles(world: &mut World, descriptions: &Descriptions) {
                         }
                     }
                 }
-            }
-
-            // if let Ok(mut query) = world.query_one::<(&WeaponType,)>(*item_entity) {
-            //     if let Some((weapon_type,)) = query.get() {
-            //         for mode in &weapon_type.modes {
-            //             attack_vehicles.push(AttackEvent {
-            //                 weapon_mode: mode.clone(),
-            //                 target_unit: target.0,
-            //             });
-            //         }
-            //     }
-            // }
+            
         }
         // entities_to_reset.push(entity);
         // targets_to_despawn.push(target.0);
