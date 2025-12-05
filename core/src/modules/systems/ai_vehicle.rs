@@ -1,4 +1,4 @@
-use crate::descriptions::{self, Descriptions};
+use crate::descriptions::Descriptions;
 use crate::modules::components::Pos;
 use crate::modules::components::{MaxSpeed, TargetId, Velocity, Guid, Target, WeaponMode, AttachedItems};
 use crate::modules::markers::{IsMoving, IsTargetNear, IsWaitingTarget, Trash, Vehicle};
@@ -115,11 +115,13 @@ fn attack_vehicles(world: &mut World, descriptions: &Descriptions) {
                 if let Some(base_item) = descriptions.items.get(&item_type) {
                     for interaction in base_item.interactions.iter() {
                         for (damage_type, damage) in interaction.action.iter() {
-                            let w = WeaponMode{ 
-                                *damage_type, *damage, 
-                                range: 0.0 };
-                            let a = AttackEvent { 
-                                weapon_mode: w, target_unit: target };
+                            let w = WeaponMode {
+                                damage_type: damage_type.clone(),
+                                damage: *damage as i32,
+                                range: 0.0,
+                            };
+                            attack_vehicles.push(AttackEvent {
+                                weapon_mode: w, target_unit: target.0 });
                         }
                     }
                 }
