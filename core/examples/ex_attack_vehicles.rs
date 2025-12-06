@@ -15,12 +15,14 @@ fn main() {
     core.attach(vehicle, item, "front_left").unwrap();
 
     // Create a trash entity close to the vehicle (at position 0.1, 0.1)
-    let trash = core.spawn_entity((
+    let _trash = core.spawn_entity((
         BaseType("TRASH".to_string()),
         Pos { x: 0.1, y: 0.1 },
         Trash {},
         Guid::new(),
     ));
+
+    core.update(15.0).unwrap();
 
     // Update the world until the vehicle attacks
     println!("Updating world to simulate vehicle movement and attacks:");
@@ -35,11 +37,6 @@ fn main() {
         for event in &attack_events {
             println!("    Weapon Mode: {:?}", event.weapon_mode);
             println!("    Target Entity: {:?}", event.target_unit);
-        }
-
-        // Stop if attacks occurred
-        if attack_events.len() > 0 {
-            break;
         }
     }
 }
