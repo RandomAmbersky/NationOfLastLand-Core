@@ -3,6 +3,7 @@ use crate::descriptions::{Descriptions, load_damage_types_static, load_items_sta
 use crate::modules::components::{AttachedItems, BaseType, EntityType, Force, Health, MaxSpeed, Owner, Pos, Rot, Velocity, WeaponMode, WeaponType};
 use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
 use crate::modules::systems::dead_remover::dead_remover_system;
+use crate::modules::systems::move_system::move_vehicles;
 use crate::world_utils::{get_base_type, spawn_entity};
 
 use crate::modules::exporter::{export_to_json, export_entity_to_json};
@@ -114,10 +115,10 @@ impl Core {
 
         dead_remover_system(&mut self.world);
 
-        // TODO проверять target на существование, если нет - переводить в isWaiting
+        move_vehicles(&mut self.world, &self.setup.spatial);
 
         // Run AI system to process waiting vehicles and assign targets
-        ai_vehicle_system(&mut self.world, &self.setup.spatial, &self.descriptions);
+        ai_vehicle_system(&mut self.world, &self.descriptions);
 
         // Process attack events and apply damage
         attack_process(&mut self.world);

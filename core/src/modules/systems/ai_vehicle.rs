@@ -92,10 +92,7 @@ fn interaction_vehicles(world: &mut World, descriptions: &Descriptions) {
 }
 
 /// System that processes vehicles waiting for targets, assigns nearest waste, and changes their state
-pub fn ai_vehicle_system(world: &mut World, spatial: &Spatial, descriptions: &Descriptions) {
+pub fn ai_vehicle_system(world: &mut World, descriptions: &Descriptions) {
     set_target_to_waiting_vehicles(world);
-
-    move_vehicles(world, spatial);
-
     interaction_vehicles(world, descriptions);
 }
