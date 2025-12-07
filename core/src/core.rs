@@ -137,7 +137,7 @@ impl Core {
         &mut self.descriptions
     }
 
-    pub fn attach(&mut self, vehicle: Entity, item: Entity, slot_id: &str) -> Result<(), String> {
+    pub fn attach_to_vehicle(&mut self, vehicle: Entity, item: Entity, slot_id: &str) -> Result<(), String> {
         // Get vehicle type
         let vehicle_type = get_base_type(&self.world, vehicle)?;
 
@@ -203,7 +203,7 @@ impl Core {
          let item = self.create_item_from_yaml("ITEM_CLEANER", Pos { x: 0.0, y: 0.0 }).unwrap();
 
         // Attach item to vehicle
-        self.attach(vehicle, item, "front_left").unwrap();
+        self.attach_to_vehicle(vehicle, item, "front_left").unwrap();
 
         for _ in 0..2 {
             self.create_trash().expect("Failed to create waste");
