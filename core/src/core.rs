@@ -174,6 +174,7 @@ impl Core {
         export_to_json(&self.world, &self.s, is_pretty)
     }
 
+    // Export once entity
     pub fn export_entity(&self, entity: Entity, is_pretty: bool) -> String {
         export_entity_to_json(&self.world, entity, is_pretty)
     }
