@@ -14,13 +14,16 @@ fn main() {
     // Attach item to vehicle
     core.attach(vehicle, item, "front_left").unwrap();
 
+
+    let w = core.get_world();
+
     // Create a trash entity close to the vehicle (at position 0.1, 0.1)
-    let _trash = core.spawn_entity((
-        BaseType("TRASH".to_string()),
-        Pos { x: 0.1, y: 0.1 },
-        Trash {},
-        Guid::new(),
-    ));
+    // let _trash = spawn_entity(w, (
+    //     BaseType("TRASH".to_string()),
+    //     Pos { x: 0.1, y: 0.1 },
+    //     Trash {},
+    //     Guid::new(),
+    // ));
 
     core.update(15.0).unwrap();
 

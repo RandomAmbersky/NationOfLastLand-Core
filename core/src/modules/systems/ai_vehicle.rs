@@ -3,14 +3,8 @@ use crate::modules::components::Pos;
 use crate::modules::components::{MaxSpeed, TargetId, Velocity, Guid, Target, WeaponMode, AttachedItems};
 use crate::modules::markers::{IsMoving, IsTargetNear, IsWaitingTarget, Trash, Vehicle};
 use crate::modules::setup::Spatial;
-use crate::world_utils::get_base_type;
-use hecs::{Entity, World};
-
-#[derive(Clone, Debug)]
-pub struct AttackEvent {
-    pub weapon_mode: WeaponMode,
-    pub target_unit: Entity,
-}
+use crate::world_utils::{AttackEvent, get_base_type};
+use hecs::World;
 
 fn move_vehicles(world: &mut World, spatial: &Spatial) {
     let mut entities_to_stop = Vec::new();
@@ -100,7 +94,7 @@ fn set_target_to_waiting_vehicles(world: &mut World) {
     }
 }
 
-pub fn attack_vehicles(world: &mut World, descriptions: &Descriptions) -> Vec<AttackEvent> {
+pub fn interaction_vehicles(world: &mut World, descriptions: &Descriptions) -> Vec<AttackEvent> {
     let mut attack_events: Vec<AttackEvent> = Vec::new();
 
     for (_entity, (_, _, target, attached_items)) in world
@@ -129,10 +123,13 @@ pub fn attack_vehicles(world: &mut World, descriptions: &Descriptions) -> Vec<At
         // targets_to_despawn.push(target.0);
     }
 
+    
     // Despawn targets
     // for target_entity in targets_to_despawn {
     //     world.despawn(target_entity).unwrap();
     // }
+
+    // world.spawn_batch(attack_events.iter());
 
     // Reset vehicles to waiting state
     // for entity in entities_to_reset {
@@ -151,5 +148,5 @@ pub fn ai_vehicle_system(world: &mut World, spatial: &Spatial, descriptions: &De
 
     move_vehicles(world, spatial);
 
-    attack_vehicles(world, descriptions);
+    interaction_vehicles(world, descriptions);
 }

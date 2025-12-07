@@ -1,13 +1,13 @@
 use crate::defines::MinMax;
 use crate::descriptions::{Descriptions, load_damage_types_static, load_items_static, load_vehicles_static};
-use crate::modules::components::{AttachedItems, BaseType, EntityType, Force, Guid, Health, MaxSpeed, Owner, Pos, Rot, Velocity, WeaponMode, WeaponType};
+use crate::modules::components::{AttachedItems, BaseType, EntityType, Force, Health, MaxSpeed, Owner, Pos, Rot, Velocity, WeaponMode, WeaponType};
 use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
-use crate::world_utils::get_base_type;
+use crate::world_utils::{AttackEvent, get_base_type, spawn_entity};
 
 use crate::modules::exporter::{export_to_json, export_entity_to_json};
 use crate::modules::setup;
 use crate::modules::state::State;
-use crate::modules::systems::ai_vehicle::{ai_vehicle_system, attack_vehicles, AttackEvent};
+use crate::modules::systems::ai_vehicle::{ai_vehicle_system, interaction_vehicles};
 use crate::random_generator::RandomGenerator;
 use hecs::{Entity, World};
 use std::error::Error;
@@ -54,25 +54,15 @@ impl Core {
         c
     }
 
-    pub fn spawn_entity(
-        &mut self,
-        bundle: impl hecs::Bundle + Send + Sync + 'static,
-    ) -> hecs::Entity {
-        let guid = Guid::new();
-        let entity = self.world.spawn(bundle);
-        self.world.insert_one(entity, guid).unwrap();
-        entity
-    }
-
     pub fn create_trash(&mut self) -> Result<(), String> {
         let bundle = self.r.get_bundle_trash(&self.setup.spatial.map_size);
-        self.spawn_entity(bundle);
+        spawn_entity(&mut self.world, bundle);
         Ok(())
     }
 
     pub fn create_vehicle_from_yaml(&mut self, vehicle_key: &str, pos: Pos) -> Result<Entity, String> {
         if let Some(vehicle_data) = self.descriptions.vehicles.get(vehicle_key) {
-            let e = self.spawn_entity((
+            let e = spawn_entity(&mut self.world, (
                 BaseType(vehicle_key.to_string()),
                 pos,
                 Rot { x: 0.0, y: 0.0 },
@@ -103,7 +93,7 @@ impl Core {
                     });
                 }
             }
-            let e = self.spawn_entity((
+            let e = spawn_entity(&mut self.world, (
                 BaseType(item_key.to_string()),
                 EntityType::Item,
                 Item {},
@@ -178,8 +168,12 @@ impl Core {
         export_entity_to_json(&self.world, entity, is_pretty)
     }
 
+    pub fn get_world(&mut self) -> &mut World {
+        &mut self.world
+    }
+
     pub fn get_attack_events(&mut self) -> Vec<AttackEvent> {
-        attack_vehicles(&mut self.world, &self.descriptions)
+        interaction_vehicles(&mut self.world, &self.descriptions)
     }
 
     fn load(&mut self) -> Result<(), Box<dyn Error>> {

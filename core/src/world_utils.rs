@@ -1,5 +1,11 @@
 use hecs::{World, Entity};
-use crate::modules::components::BaseType;
+use crate::modules::components::{BaseType, Guid, WeaponMode};
+
+#[derive(Clone, Debug)]
+pub struct AttackEvent {
+    pub weapon_mode: WeaponMode,
+    pub target_unit: Entity,
+}
 
 pub fn get_base_type(world: &World, entity: Entity) -> Result<String, String> {
     if let Ok(mut query) = world.query_one::<&BaseType>(entity) {
@@ -11,4 +17,19 @@ pub fn get_base_type(world: &World, entity: Entity) -> Result<String, String> {
     } else {
         Err("Vehicle not found".to_string())
     }
+}
+
+pub fn spawn_entity(
+    world: &mut World,
+    bundle: impl hecs::Bundle + Send + Sync + 'static,
+) -> hecs::Entity {
+    let guid = Guid::new();
+    let entity = world.spawn(bundle);
+    world.insert_one(entity, guid).unwrap();
+    entity
+}
+
+pub fn add_attack_event(world: &World, entity: AttackEvent) -> Result<(), String> {
+
+    Ok(())
 }
