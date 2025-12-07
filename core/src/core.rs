@@ -1,7 +1,7 @@
 use crate::defines::MinMax;
 use crate::descriptions::{Descriptions, load_damage_types_static, load_items_static, load_vehicles_static};
-use crate::modules::components::{AttachedItems, BaseType, EntityType, Force, Health, MaxSpeed, Owner, Pos, Rot, Velocity, WeaponMode, WeaponType};
-use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
+use crate::modules::components::{AttachedItems, Owner, Pos};
+use crate::modules::markers::Item;
 use crate::modules::systems::dead_remover::do_remove_dead;
 use crate::modules::systems::move_system::do_move;
 use crate::world_utils::{get_base_type, spawn_entity};
@@ -12,6 +12,7 @@ use crate::modules::state::State;
 use crate::modules::systems::ai_vehicle::{ai_vehicle_system};
 use crate::modules::systems::attack_processor::attack_process;
 use crate::random_generator::RandomGenerator;
+use crate::spawner::{create_item_from_yaml, create_vehicle_from_yaml};
 use hecs::{Entity, World};
 use std::error::Error;
 
@@ -63,52 +64,12 @@ impl Core {
         Ok(())
     }
 
-    pub fn create_vehicle_from_yaml(&mut self, vehicle_key: &str, pos: Pos) -> Result<Entity, String> {
-        if let Some(vehicle_data) = self.descriptions.vehicles.get(vehicle_key) {
-            let e = spawn_entity(&mut self.world, (
-                BaseType(vehicle_key.to_string()),
-                pos,
-                Rot { x: 0.0, y: 0.0 },
-                MaxSpeed(vehicle_data.max_speed),
-                Velocity { x: 0.0, y: 0.0 },
-                Health { current: vehicle_data.max_health, max: vehicle_data.max_health },
-                Force(100.0),
-                IsWaitingTarget {},
-                EntityType::Vehicle,
-                Vehicle {},
-            ));
-
-            Ok(e)
-        } else {
-            Err(format!("Vehicle '{}' not found in descriptions", vehicle_key))
-        }
+    pub fn create_vehicle(&mut self, vehicle_key: &str, pos: Pos) -> Result<Entity, String> {
+        create_vehicle_from_yaml(&mut self.world, &self.descriptions, vehicle_key, pos)
     }
 
-    pub fn create_item_from_yaml(&mut self, item_key: &str, _pos: Pos) -> Result<Entity, String> {
-        if let Some(item_data) = self.descriptions.items.get(item_key) {
-            let mut modes = Vec::new();
-            for interaction in &item_data.interactions {
-                for (dmg_type, dmg_value) in &interaction.action {
-                    modes.push(WeaponMode {
-                        damage_type: dmg_type.clone(),
-                        damage: *dmg_value,
-                        range: 1.0,
-                    });
-                }
-            }
-            let e = spawn_entity(&mut self.world, (
-                BaseType(item_key.to_string()),
-                EntityType::Item,
-                Item {},
-            ));
-            if !modes.is_empty() {
-                let weapon_type = WeaponType { modes };
-                self.world.insert_one(e, weapon_type).unwrap();
-            }
-            Ok(e)
-        } else {
-            Err(format!("Item '{}' not found in descriptions", item_key))
-        }
+    pub fn create_item(&mut self, item_key: &str, pos: Pos) -> Result<Entity, String> {
+        create_item_from_yaml(&mut self.world, &self.descriptions, item_key, pos)
     }
 
     pub fn update(&mut self, delta: f64) -> Result<(), String> {
@@ -196,11 +157,11 @@ impl Core {
 impl Core {
     fn init_world(&mut self) {
         // Создание vehicle на основе данных из YAML (VEHICLE_CAR)
-        let vehicle = self.create_vehicle_from_yaml("VEHICLE_CAR", Pos { x: 1.0, y: 1.0 })
+        let vehicle = self.create_vehicle("VEHICLE_CAR", Pos { x: 1.0, y: 1.0 })
             .expect("Failed to create vehicle from YAML");
 
         // Create an item with interactions
-         let item = self.create_item_from_yaml("ITEM_CLEANER", Pos { x: 0.0, y: 0.0 }).unwrap();
+         let item = self.create_item("ITEM_CLEANER", Pos { x: 0.0, y: 0.0 }).unwrap();
 
         // Attach item to vehicle
         self.attach_to_vehicle(vehicle, item, "front_left").unwrap();

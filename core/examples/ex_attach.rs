@@ -5,10 +5,10 @@ fn main() {
     let mut core = Core::new();
 
     // Создание транспортного средства (vehicle)
-    let vehicle = core.create_vehicle_from_yaml("VEHICLE_CAR", Pos { x: 0.0, y: 0.0 }).unwrap();
+    let vehicle = core.create_vehicle("VEHICLE_CAR", Pos { x: 0.0, y: 0.0 }).unwrap();
 
     // Создание предмета (item)
-    let item = core.create_item_from_yaml("ITEM_CLEANER", Pos { x: 0.0, y: 0.0 }).unwrap();
+    let item = core.create_item("ITEM_CLEANER", Pos { x: 0.0, y: 0.0 }).unwrap();
 
     // Присоединение предмета к транспортному средству в слоту "front_left"
     core.attach_to_vehicle(vehicle, item, "front_left").unwrap();
