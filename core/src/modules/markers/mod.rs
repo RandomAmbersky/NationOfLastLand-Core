@@ -7,6 +7,7 @@ mod stopped;
 mod trash;
 mod is_target_near;
 mod attack_event;
+mod is_dead;
 
 pub use alert::Alert;
 pub use vehicle::Vehicle;
@@ -17,3 +18,4 @@ pub use stopped::Stopped;
 pub use trash::Trash;
 pub use is_target_near::IsTargetNear;
 pub use attack_event::AttackEvent;
+pub use is_dead::IsDead;

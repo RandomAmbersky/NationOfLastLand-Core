@@ -2,7 +2,7 @@ use hecs::{Entity, World};
 
 use crate::descriptions::Descriptions;
 use crate::modules::components::{Health, Target, WeaponMode, Resistance};
-use crate::modules::markers::AttackEvent;
+use crate::modules::markers::{AttackEvent, IsDead};
 
 pub fn attack_process(world: &mut World, _descriptions: &Descriptions) {
     // Collect attack events to process and remove them later to avoid borrowing issues
@@ -15,6 +15,7 @@ pub fn attack_process(world: &mut World, _descriptions: &Descriptions) {
     for (e, target, weapon_mode) in attack_events {
         println!("attack_events...");
         // Get the target's health and resistance
+        let mut should_add_dead_marker = false;
         if let Ok(mut query) = world.query_one::<(&mut Health, Option<&Resistance>)>(target.0) {
             if let Some((health, resistance_opt)) = query.get() {
                 let mut damage = weapon_mode.damage as f32;
@@ -35,8 +36,16 @@ pub fn attack_process(world: &mut World, _descriptions: &Descriptions) {
 
                 println!("health {}", health.current);
 
-                // Note: Entity removal or death handling can be added later if needed
+                // Check if dead
+                if health.current == 0.0 {
+                    should_add_dead_marker = true;
+                }
             }
+        }
+
+        // Add IsDead marker if health reached zero
+        if should_add_dead_marker {
+            world.insert_one(target.0, IsDead {}).unwrap();
         }
 
         // Remove the attack event entity after processing
