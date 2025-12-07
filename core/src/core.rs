@@ -2,7 +2,7 @@ use crate::defines::MinMax;
 use crate::descriptions::{Descriptions, load_damage_types_static, load_items_static, load_vehicles_static};
 use crate::modules::components::{AttachedItems, BaseType, EntityType, Force, Health, MaxSpeed, Owner, Pos, Rot, Velocity, WeaponMode, WeaponType};
 use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
-use crate::modules::systems::dead_remover::dead_remover_system;
+use crate::modules::systems::dead_remover::do_remove_dead;
 use crate::modules::systems::move_system::do_move;
 use crate::world_utils::{get_base_type, spawn_entity};
 
@@ -113,7 +113,7 @@ impl Core {
 
     pub fn update(&mut self, delta: f64) -> Result<(), String> {
 
-        dead_remover_system(&mut self.world);
+        do_remove_dead(&mut self.world);
 
         do_move(&mut self.world, &self.setup.spatial);
 

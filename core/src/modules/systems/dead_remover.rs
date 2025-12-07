@@ -1,7 +1,7 @@
 use hecs::World;
 use crate::modules::markers::IsDead;
 
-pub fn dead_remover_system(world: &mut World) {
+pub fn do_remove_dead(world: &mut World) {
     // Collect entities with IsDead marker
     let mut entities_to_remove: Vec<hecs::Entity> = Vec::new();
 
