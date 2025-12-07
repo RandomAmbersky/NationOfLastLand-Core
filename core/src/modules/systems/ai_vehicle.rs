@@ -115,7 +115,6 @@ fn interaction_vehicles(world: &mut World, descriptions: &Descriptions) {
                                 damage: *damage as i32,
                                 range: 0.0,
                             };
-                            println!("console log {:?}", target.0);
                             attack_events.push(Attack {
                                 weapon_mode: w, target_unit: target.0 });
                         }

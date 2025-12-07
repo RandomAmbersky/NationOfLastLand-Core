@@ -120,7 +120,7 @@ impl Core {
         ai_vehicle_system(&mut self.world, &self.setup.spatial, &self.descriptions);
 
         // Process attack events and apply damage
-        attack_process(&mut self.world, &self.descriptions);
+        attack_process(&mut self.world);
 
         // Increment time
         self.s.time += delta;
