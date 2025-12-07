@@ -11,7 +11,7 @@ fn main() {
     let item = core.create_item_from_yaml("ITEM_CLEANER", Pos { x: 0.0, y: 0.0 }).unwrap();
 
     // Присоединение предмета к транспортному средству в слоту "front_left"
-    core.attach(vehicle, item, "front_left").unwrap();
+    core.attach_to_vehicle(vehicle, item, "front_left").unwrap();
 
     // Вывод содержимого vehicle
     let vehicle_content = core.export_entity(vehicle, true);

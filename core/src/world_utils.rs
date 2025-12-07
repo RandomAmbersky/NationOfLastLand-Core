@@ -45,6 +45,3 @@ pub fn reset_target (world: &mut World, entity: Entity) {
     world.insert_one(entity, IsWaitingTarget {}).unwrap();
 }
 
-pub fn set_target (world: &mut World, entity: Entity, target: Entity) {
-
-}
