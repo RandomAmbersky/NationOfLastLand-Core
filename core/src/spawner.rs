@@ -1,6 +1,7 @@
 use crate::descriptions::Descriptions;
 use crate::modules::components::{BaseType, EntityType, Force, Health, MaxSpeed, Pos, Rot, Velocity, WeaponMode, WeaponType};
 use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
+use crate::random_generator::RandomGenerator;
 use crate::world_utils::spawn_entity;
 use hecs::{Entity, World};
 
@@ -49,5 +50,17 @@ pub fn create_item_from_description(world: &mut World, descriptions: &Descriptio
         Ok(e)
     } else {
         Err(format!("Item '{}' not found in descriptions", item_key))
+    }
+}
+
+pub fn create_alert_from_description(world: &mut World, descriptions: &Descriptions, alert_key: &str, pos: Pos, r: &RandomGenerator) -> Result<Entity, String> {
+    if let Some(_description) = descriptions.alerts.get(alert_key) {
+        match alert_key {
+            "ALERT_TRASH" => Ok(spawn_entity(world, r.get_bundle_trash(pos))),
+            "ALERT_WASTE" => Ok(spawn_entity(world, r.get_bundle_waste(pos))),
+            _ => Err(format!("Unknown alert type '{}'", alert_key)),
+        }
+    } else {
+        Err(format!("Alert '{}' not found in descriptions", alert_key))
     }
 }

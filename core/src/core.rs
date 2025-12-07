@@ -1,5 +1,5 @@
 use crate::defines::MinMax;
-use crate::descriptions::{Descriptions, load_damage_types_static, load_items_static, load_vehicles_static};
+use crate::descriptions::{Descriptions, load_alerts_static, load_damage_types_static, load_items_static, load_vehicles_static};
 use crate::modules::components::{AttachedItems, Owner, Pos};
 use crate::modules::markers::Item;
 use crate::modules::systems::dead_remover::do_remove_dead;
@@ -16,6 +16,7 @@ use crate::spawner::{create_item_from_description, create_vehicle_from_descripti
 use hecs::{Entity, World};
 use std::error::Error;
 
+const ALERTS_YAML: &str = include_str!("../../data/alerts.yml");
 const DAMAGE_TYPES_YAML: &str = include_str!("../../data/damage_types.yml");
 const ITEMS_YAML: &str = include_str!("../../data/items.yml");
 const VEHICLES_YAML: &str = include_str!("../../data/vehicles.yml");
@@ -59,7 +60,9 @@ impl Core {
     }
 
     pub fn create_trash(&mut self) -> Result<(), String> {
-        let bundle = self.r.get_bundle_trash(&self.setup.spatial.map_size);
+        use crate::random_generator::generate_random_pos;
+        let pos = generate_random_pos(&self.setup.spatial.map_size);
+        let bundle = self.r.get_bundle_trash(pos);
         spawn_entity(&mut self.world, bundle);
         Ok(())
     }
@@ -146,6 +149,7 @@ impl Core {
     }
 
     fn load(&mut self) -> Result<(), Box<dyn Error>> {
+        self.descriptions.alerts = load_alerts_static(ALERTS_YAML)?;
         self.descriptions.damage_types = load_damage_types_static(DAMAGE_TYPES_YAML)?;
         self.descriptions.items = load_items_static(ITEMS_YAML)?.items;
         self.descriptions.vehicles = load_vehicles_static(VEHICLES_YAML)?.vehicles;
