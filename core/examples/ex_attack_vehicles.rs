@@ -9,7 +9,7 @@ fn main() {
     // Update the world until the vehicle attacks
     println!("Updating world to simulate vehicle movement and attacks:");
     for i in 1..=100 {
-        println!("Update {}", i);
+        println!("----- Update {}", i);
         core.update(15.0).unwrap();
 
         let w = core.get_world();

@@ -12,7 +12,7 @@ pub fn attack_process(world: &mut World) {
         .collect();
 
     for (e, target, weapon_mode) in attack_events {
-        // println!("attack_events...");
+        println!("attack_events...");
         // Get the target's health and resistance
         let mut should_add_dead_marker = false;
         if let Ok(mut query) = world.query_one::<(&mut Health, Option<&Resistance>)>(target.0) {
