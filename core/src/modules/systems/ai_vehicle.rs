@@ -77,7 +77,7 @@ fn set_target_to_waiting_vehicles(world: &mut World) {
                 nearest_entity = Some(t_entity);
             }
         }
-        if let (Some(ng), Some(ne)) = (nearest_guid, nearest_entity) {
+        if let (Some(_ng), Some(ne)) = (nearest_guid, nearest_entity) {
             // Assign target
             let target = Target(ne);
             waiting_entities.push((entity, target));
@@ -112,7 +112,7 @@ fn interaction_vehicles(world: &mut World, descriptions: &Descriptions) {
                         for (damage_type, damage) in interaction.action.iter() {
                             let w = WeaponMode {
                                 damage_type: damage_type.clone(),
-                                damage: *damage as i32,
+                                damage: *damage,
                                 range: 0.0,
                             };
                             attack_events.push(Attack {

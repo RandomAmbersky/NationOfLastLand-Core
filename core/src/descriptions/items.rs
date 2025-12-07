@@ -30,7 +30,7 @@ pub struct ItemYaml {
 pub struct ItemInteraction {
     pub name: String,
     #[serde(flatten)]
-    pub action: HashMap<String, f64>,
+    pub action: HashMap<String, f32>,
 }
 
 // Keeping this for compatibility, but it might not be used anymore
@@ -38,7 +38,7 @@ pub struct ItemInteraction {
 pub struct ItemAttackTypeYaml {
     #[serde(rename = "type")]
     pub attack_type: String,
-    pub damage: f64,
+    pub damage: f32,
 }
 
 fn deserialize_marker<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>

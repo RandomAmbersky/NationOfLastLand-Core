@@ -17,7 +17,7 @@ pub fn attack_process(world: &mut World) {
         let mut should_add_dead_marker = false;
         if let Ok(mut query) = world.query_one::<(&mut Health, Option<&Resistance>)>(target.0) {
             if let Some((health, resistance_opt)) = query.get() {
-                let mut damage = weapon_mode.damage as f32;
+                let mut damage = weapon_mode.damage;
 
                 println!("base damage {}", damage);
 

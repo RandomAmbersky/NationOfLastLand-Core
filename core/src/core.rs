@@ -90,7 +90,7 @@ impl Core {
                 for (dmg_type, dmg_value) in &interaction.action {
                     modes.push(WeaponMode {
                         damage_type: dmg_type.clone(),
-                        damage: *dmg_value as i32,
+                        damage: *dmg_value,
                         range: 1.0,
                     });
                 }
