@@ -12,7 +12,7 @@ use crate::modules::state::State;
 use crate::modules::systems::ai_vehicle::{ai_vehicle_system};
 use crate::modules::systems::attack_processor::attack_process;
 use crate::random_generator::RandomGenerator;
-use crate::spawner::{create_item_from_yaml, create_vehicle_from_yaml};
+use crate::spawner::{create_item_from_description, create_vehicle_from_description};
 use hecs::{Entity, World};
 use std::error::Error;
 
@@ -65,11 +65,11 @@ impl Core {
     }
 
     pub fn create_vehicle(&mut self, vehicle_key: &str, pos: Pos) -> Result<Entity, String> {
-        create_vehicle_from_yaml(&mut self.world, &self.descriptions, vehicle_key, pos)
+        create_vehicle_from_description(&mut self.world, &self.descriptions, vehicle_key, pos)
     }
 
     pub fn create_item(&mut self, item_key: &str, pos: Pos) -> Result<Entity, String> {
-        create_item_from_yaml(&mut self.world, &self.descriptions, item_key, pos)
+        create_item_from_description(&mut self.world, &self.descriptions, item_key, pos)
     }
 
     pub fn update(&mut self, delta: f64) -> Result<(), String> {

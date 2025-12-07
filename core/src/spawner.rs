@@ -4,7 +4,7 @@ use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
 use crate::world_utils::spawn_entity;
 use hecs::{Entity, World};
 
-pub fn create_vehicle_from_yaml(world: &mut World, descriptions: &Descriptions, vehicle_key: &str, pos: Pos) -> Result<Entity, String> {
+pub fn create_vehicle_from_description(world: &mut World, descriptions: &Descriptions, vehicle_key: &str, pos: Pos) -> Result<Entity, String> {
     if let Some(vehicle_data) = descriptions.vehicles.get(vehicle_key) {
         let e = spawn_entity(world, (
             BaseType(vehicle_key.to_string()),
@@ -25,7 +25,7 @@ pub fn create_vehicle_from_yaml(world: &mut World, descriptions: &Descriptions, 
     }
 }
 
-pub fn create_item_from_yaml(world: &mut World, descriptions: &Descriptions, item_key: &str, _pos: Pos) -> Result<Entity, String> {
+pub fn create_item_from_description(world: &mut World, descriptions: &Descriptions, item_key: &str, _pos: Pos) -> Result<Entity, String> {
     if let Some(item_data) = descriptions.items.get(item_key) {
         let mut modes = Vec::new();
         for interaction in &item_data.interactions {
