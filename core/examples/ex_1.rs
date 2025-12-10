@@ -19,7 +19,7 @@ fn main() {
     println!("State reputation after update: {}", core.export_world(false).split(',').find(|s| s.contains("reputation")).unwrap_or("not found"));
 
     let s = core.export_world(true);
-    println!("Export world: {s}");
+    println!("Final world: {s}");
 
     // for _i in 0..100 {
     //     core.update(15.0).unwrap();

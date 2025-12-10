@@ -69,7 +69,16 @@ impl Core {
     }
 
     pub fn create_vehicle(&mut self, vehicle_key: &str, pos: Pos) -> Result<Entity, String> {
-        create_vehicle_from_description(&mut self.world, &self.descriptions, vehicle_key, pos, &self.r)
+        if let Some(vehicle_data) = self.descriptions.vehicles.get(vehicle_key) {
+            if self.s.reputation.0 >= vehicle_data.reputation_cost {
+                self.s.reputation.0 -= vehicle_data.reputation_cost;
+                create_vehicle_from_description(&mut self.world, &self.descriptions, vehicle_key, pos, &self.r)
+            } else {
+                Err(format!("Not enough reputation to create vehicle '{}'. Required: {}, available: {}", vehicle_key, vehicle_data.reputation_cost, self.s.reputation.0))
+            }
+        } else {
+            Err(format!("Vehicle '{}' not found in descriptions", vehicle_key))
+        }
     }
 
     pub fn create_item(&mut self, item_key: &str, pos: Pos) -> Result<Entity, String> {
