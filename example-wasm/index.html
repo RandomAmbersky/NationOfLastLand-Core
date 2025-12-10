@@ -117,7 +117,7 @@
             <button onclick="stopAnimation()" id="stopBtn" disabled>Stop Animation</button>
             <button onclick="singleAnimate()">Single Animate</button>
             <div style="margin: 10px 0;">
-                <input type="text" id="vehicleType" placeholder="VEHICLE_CAR" value="VEHICLE_CAR" style="margin-right: 10px;">
+                <input type="text" id="vehicleType" placeholder="VEHICLE_CAR" value="VEHICLE_CAR" onchange="updateButtonState()" style="margin-right: 10px;">
                 <input type="number" id="vehicleX" placeholder="X" value="5.0" step="0.1" style="width: 80px; margin-right: 10px;">
                 <input type="number" id="vehicleY" placeholder="Y" value="5.0" step="0.1" style="width: 80px; margin-right: 10px;">
                 <button onclick="createMachine()">Create Machine</button>
@@ -145,7 +145,7 @@
     </div>
 
     <script type="module">
-        import init, { get_core_info, async_example, get_world_data, update_world, create_vehicle } from './pkg/example_wasm.js';
+        import init, { get_core_info, async_example, get_world_data, update_world, create_vehicle, can_create_vehicle } from './pkg/example_wasm.js';
 
         let pixiApp = null;
         let animationFrame = null;
@@ -157,6 +157,7 @@
         async function run() {
             await init();
             log('WASM module loaded successfully!');
+            updateButtonState();
         }
 
         window.showTab = function(tabName) {
@@ -174,6 +175,7 @@
         window.showCoreInfo = function() {
             const info = get_core_info();
             const worldDataJson = get_world_data();
+            updateButtonState();
             let worldData;
             try {
                 worldData = JSON.parse(worldDataJson);
@@ -227,6 +229,7 @@
 
             // Get world data from WASM
             const worldDataJson = get_world_data();
+            updateButtonState();
             // console.log('worldDataJson:', worldDataJson);
 
             let worldData;
@@ -283,6 +286,7 @@
 
         window.updateMachinesParams = function() {
             const worldDataJson = get_world_data();
+            updateButtonState();
             let worldData;
             try {
                 worldData = JSON.parse(worldDataJson);
@@ -383,12 +387,22 @@
             try {
                 const result = create_vehicle(vehicleType, x, y);
                 log(result);
+                // Update button state after creating (reputation might have changed)
+                updateButtonState();
                 // Redraw after creating
                 draw();
             } catch (error) {
                 log(`Error creating vehicle: ${error}`);
             }
         };
+
+        function updateButtonState() {
+            const vehicleType = document.getElementById('vehicleType').value;
+            const canCreate = can_create_vehicle(vehicleType);
+            const createBtn = document.querySelector('button[onclick="createMachine()"]');
+            createBtn.disabled = !canCreate;
+            createBtn.style.background = canCreate ? '#007bff' : '#ccc';
+        }
 
         function log(message) {
             const resultDiv = document.getElementById('result');

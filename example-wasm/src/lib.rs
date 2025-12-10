@@ -49,6 +49,15 @@ pub fn get_world_data() -> String {
     CORE.with(|core| core.borrow().export_world(false))
 }
 
+// Function to check if enough reputation to create vehicle
+#[wasm_bindgen]
+pub fn can_create_vehicle(vehicle_key: &str) -> bool {
+    CORE.with(|core| {
+        let core = core.borrow();
+        core.can_create_vehicle(vehicle_key)
+    })
+}
+
 // Function to create a new vehicle
 #[wasm_bindgen]
 pub fn create_vehicle(vehicle_key: &str, x: f32, y: f32) -> Result<String, JsValue> {

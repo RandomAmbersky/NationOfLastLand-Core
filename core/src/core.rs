@@ -166,6 +166,14 @@ impl Core {
         &mut self.world
     }
 
+    pub fn can_create_vehicle(&self, vehicle_key: &str) -> bool {
+        if let Some(vehicle_data) = self.descriptions.vehicles.get(vehicle_key) {
+            self.s.reputation.0 >= vehicle_data.reputation_cost
+        } else {
+            false
+        }
+    }
+
     fn load(&mut self) -> Result<(), Box<dyn Error>> {
         self.descriptions.alerts = load_alerts_static(ALERTS_YAML)?;
         self.descriptions.damage_types = load_damage_types_static(DAMAGE_TYPES_YAML)?;
