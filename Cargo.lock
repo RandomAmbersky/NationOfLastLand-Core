@@ -47,8 +47,10 @@ name = "example-wasm"
 version = "0.1.0"
 dependencies = [
  "console_error_panic_hook",
+ "hecs",
  "js-sys",
  "nation-of-last-land-core",
+ "uuid",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",

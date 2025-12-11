@@ -70,11 +70,11 @@ impl Core {
 
     pub fn create_vehicle(&mut self, vehicle_key: &str, pos: Pos) -> Result<Entity, String> {
         if let Some(vehicle_data) = self.descriptions.vehicles.get(vehicle_key) {
-            if self.s.reputation.0 >= vehicle_data.reputation_cost {
-                self.s.reputation.0 -= vehicle_data.reputation_cost;
+            if self.s.reputation.0 >= vehicle_data.reputation_cost_buy {
+                self.s.reputation.0 -= vehicle_data.reputation_cost_buy;
                 create_vehicle_from_description(&mut self.world, &self.descriptions, vehicle_key, pos, &self.r)
             } else {
-                Err(format!("Not enough reputation to create vehicle '{}'. Required: {}, available: {}", vehicle_key, vehicle_data.reputation_cost, self.s.reputation.0))
+                Err(format!("Not enough reputation to create vehicle '{}'. Required: {}, available: {}", vehicle_key, vehicle_data.reputation_cost_buy, self.s.reputation.0))
             }
         } else {
             Err(format!("Vehicle '{}' not found in descriptions", vehicle_key))
@@ -83,6 +83,35 @@ impl Core {
 
     pub fn create_item(&mut self, item_key: &str, pos: Pos) -> Result<Entity, String> {
         create_item_from_description(&mut self.world, &self.descriptions, item_key, pos)
+    }
+
+    pub fn sell_vehicle(&mut self, vehicle_guid: Guid) -> Result<(), String> {
+        // Get entity from guid
+        let vehicle = crate::internal_data::INTERNAL_DATA.with(|data| {
+            data.borrow().guid_to_entity.get(&vehicle_guid).copied()
+        }).ok_or_else(|| format!("Vehicle with Guid {:?} not found", vehicle_guid))?;
+
+        // Get vehicle type
+        let vehicle_type = get_base_type(&self.world, vehicle)?;
+
+        if let Some(vehicle_data) = self.descriptions.vehicles.get(&vehicle_type) {
+            // Add reputation for selling
+            self.s.reputation.0 += vehicle_data.reputation_cost_sell;
+
+            // Remove vehicle from world
+            self.world.despawn(vehicle).map_err(|_| "Failed to remove vehicle")?;
+
+            // Remove from cache
+            crate::internal_data::INTERNAL_DATA.with(|data| {
+                let mut data = data.borrow_mut();
+                data.guid_to_entity.remove(&vehicle_guid);
+                data.entity_to_guid.remove(&vehicle);
+            });
+
+            Ok(())
+        } else {
+            Err(format!("Vehicle type '{}' not found in descriptions", vehicle_type))
+        }
     }
 
     pub fn update(&mut self, delta: f64) -> Result<(), String> {
@@ -168,7 +197,7 @@ impl Core {
 
     pub fn can_create_vehicle(&self, vehicle_key: &str) -> bool {
         if let Some(vehicle_data) = self.descriptions.vehicles.get(vehicle_key) {
-            self.s.reputation.0 >= vehicle_data.reputation_cost
+            self.s.reputation.0 >= vehicle_data.reputation_cost_buy
         } else {
             false
         }

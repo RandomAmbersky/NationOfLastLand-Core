@@ -54,7 +54,8 @@ fn main() {
         println!("  {}:", name);
         println!("    max_speed: {:?}", vehicle.max_speed);
         println!("    max_health: {:?}", vehicle.max_health);
-        println!("    reputation_cost: {}", vehicle.reputation_cost);
+        println!("    reputation_cost_buy: {}", vehicle.reputation_cost_buy);
+        println!("    reputation_cost_sell: {}", vehicle.reputation_cost_sell);
         println!("    reputation_cost_destroy: {}", vehicle.reputation_cost_destroy);
         if !vehicle.active_slot.is_empty() {
             println!("    active_slot:");

@@ -1,6 +1,6 @@
 use crate::descriptions::Descriptions;
 use crate::descriptions::alerts::AlertYaml;
-use crate::modules::components::{BaseType, EntityType, Force, Health, MaxSpeed, Pos, Reputation, ReputationCost, Rot, Velocity};
+use crate::modules::components::{BaseType, EntityType, Force, Guid, Health, MaxSpeed, Pos, Reputation, ReputationCost, Rot, Velocity};
 use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
 use crate::random_generator::RandomGenerator;
 use crate::world_utils::spawn_entity;
@@ -22,8 +22,18 @@ pub fn create_vehicle_from_description(world: &mut World, descriptions: &Descrip
             Vehicle {},
             unit_name,
             Reputation(vehicle_data.reputation_cost_destroy),
-            ReputationCost(vehicle_data.reputation_cost)
+            ReputationCost(vehicle_data.reputation_cost_buy)
         ));
+
+        // Update internal data maps
+        if let Ok(guid) = world.get::<&Guid>(e) {
+            let guid = *guid;
+            crate::internal_data::INTERNAL_DATA.with(|data| {
+                let mut data = data.borrow_mut();
+                data.guid_to_entity.insert(guid, e);
+                data.entity_to_guid.insert(e, guid);
+            });
+        }
 
         Ok(e)
     } else {
@@ -40,6 +50,17 @@ pub fn create_item_from_description(world: &mut World, descriptions: &Descriptio
             EntityType::Item,
             Item {},
         ));
+
+        // Update internal data maps
+        if let Ok(guid) = world.get::<&Guid>(e) {
+            let guid = *guid;
+            crate::internal_data::INTERNAL_DATA.with(|data| {
+                let mut data = data.borrow_mut();
+                data.guid_to_entity.insert(guid, e);
+                data.entity_to_guid.insert(e, guid);
+            });
+        }
+
         Ok(e)
     } else {
         Err(format!("Item '{}' not found in descriptions", item_key))
@@ -62,6 +83,17 @@ fn create_trash(world: &mut World, pos: Pos, r: &RandomGenerator, description: &
     let bundle = r.get_bundle_trash(pos);
     let e = spawn_entity(world, bundle);
     world.insert_one(e, Reputation(description.reputation_cost_destroy)).unwrap();
+
+    // Update internal data maps
+    if let Ok(guid) = world.get::<&Guid>(e) {
+        let guid = *guid;
+        crate::internal_data::INTERNAL_DATA.with(|data| {
+            let mut data = data.borrow_mut();
+            data.guid_to_entity.insert(guid, e);
+            data.entity_to_guid.insert(e, guid);
+        });
+    }
+
     e
 }
 
@@ -69,5 +101,16 @@ fn create_waste(world: &mut World, pos: Pos, r: &RandomGenerator,  description: 
     let bundle = r.get_bundle_waste(pos);
     let e = spawn_entity(world, bundle);
     world.insert_one(e, Reputation(description.reputation_cost_destroy)).unwrap();
+
+    // Update internal data maps
+    if let Ok(guid) = world.get::<&Guid>(e) {
+        let guid = *guid;
+        crate::internal_data::INTERNAL_DATA.with(|data| {
+            let mut data = data.borrow_mut();
+            data.guid_to_entity.insert(guid, e);
+            data.entity_to_guid.insert(e, guid);
+        });
+    }
+
     e
 }

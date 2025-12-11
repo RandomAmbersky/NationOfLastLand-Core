@@ -37,6 +37,16 @@ pub fn spawn_attack_event(world: &mut World, ev: Attack) -> Result<Entity, Strin
         ev.weapon_mode
     ));
 
+    // Update internal data maps
+    if let Ok(guid) = world.get::<&Guid>(e) {
+        let guid = *guid;
+        crate::internal_data::INTERNAL_DATA.with(|data| {
+            let mut data = data.borrow_mut();
+            data.guid_to_entity.insert(guid, e);
+            data.entity_to_guid.insert(e, guid);
+        });
+    }
+
     Ok(e)
 }
 

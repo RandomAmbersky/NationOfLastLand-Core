@@ -125,7 +125,8 @@ impl Serialize for UnitExport<'_> {
     where
         S: serde::Serializer,
     {
-        let map = serializer.serialize_map(None)?;
+        let mut map = serializer.serialize_map(None)?;
+        map.serialize_entry("id", &self.entity.entity().to_bits())?;
         let mut context = Context;
         context.serialize_entity(self.entity.clone(), map)
     }
