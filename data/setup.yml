@@ -3,7 +3,5 @@ spatial:
   map_size:
     width: 10
     height: 10
-toxic_health:
-  max: 50.0
-  min: 1.0
-trash_probability_threshold: 0.99
+toxic_health: [1.0, 50.0]
+trash_probability_threshold: 0.999
