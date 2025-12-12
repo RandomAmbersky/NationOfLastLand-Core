@@ -4,7 +4,7 @@ use crate::{
     defines::{MapSize, MinMax},
     modules::{
         components::{DamageType, EntityType, Health, Pos, Resistance, UnitName},
-        markers::{Alert, Trash}
+        markers::{Alert, Base, Trash}
     },
 };
 
@@ -50,6 +50,13 @@ impl RandomGenerator {
         let mut resistance = Resistance::default();
         resistance.resistances.insert(DamageType::Physical, 0.0);
         (pos, Health { current: health, max: health, cup: MinMax { max: health, min: health } }, EntityType::Waste, Alert {}, resistance)
+    }
+
+    pub fn get_bundle_base(&self, pos: Pos) -> (Pos, Health, EntityType, Base, Resistance) {
+        let health = generate_between(&self.toxic_health);
+        let mut resistance = Resistance::default();
+        resistance.resistances.insert(DamageType::Physical, 0.0);
+        (pos, Health { current: health, max: health, cup: MinMax { max: health, min: health } }, EntityType::Base, Base {}, resistance)
     }
 
     pub fn generate_unit_name(&self) -> UnitName {

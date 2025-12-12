@@ -1,0 +1,8 @@
+bases:
+  - type: BASE_MAIN
+    reputation_cost_destroy: 10.0
+  - type: BASE_OUTPOST
+    reputation_cost_destroy: 5.0
+    interactions:
+    - name: DEFEND
+      DMG_BULLET: 2.0

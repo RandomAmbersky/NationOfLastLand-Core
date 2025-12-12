@@ -1,4 +1,4 @@
-use crate::descriptions::{Descriptions, load_alerts_static, load_damage_types_static, load_items_static, load_vehicles_static};
+use crate::descriptions::{Descriptions, load_alerts_static, load_bases_static, load_damage_types_static, load_items_static, load_vehicles_static};
 use crate::exporter::{export_entity_to_json, export_to_json};
 use crate::modules::components::{AttachedItems, Guid, Owner, Pos};
 use crate::modules::markers::Item;
@@ -12,11 +12,12 @@ use crate::modules::state::State;
 use crate::modules::systems::ai_vehicle::{ai_vehicle_system};
 use crate::modules::systems::attack_processor::attack_process;
 use crate::random_generator::RandomGenerator;
-use crate::spawner::{create_alert_from_description, create_item_from_description, create_vehicle_from_description};
+use crate::spawner::{create_alert_from_description, create_base_from_description, create_item_from_description, create_vehicle_from_description};
 use hecs::{Entity, World};
 use std::error::Error;
 
 const ALERTS_YAML: &str = include_str!("../../data/alerts.yml");
+const BASES_YAML: &str = include_str!("../../data/bases.yml");
 const DAMAGE_TYPES_YAML: &str = include_str!("../../data/damage_types.yml");
 const ITEMS_YAML: &str = include_str!("../../data/items.yml");
 const VEHICLES_YAML: &str = include_str!("../../data/vehicles.yml");
@@ -83,6 +84,10 @@ impl Core {
 
     pub fn create_item(&mut self, item_key: &str, pos: Pos) -> Result<Entity, String> {
         create_item_from_description(&mut self.world, &self.descriptions, item_key, pos)
+    }
+
+    pub fn create_base(&mut self, base_key: &str, pos: Pos) -> Result<Entity, String> {
+        create_base_from_description(&mut self.world, &self.descriptions, base_key, pos, &self.r)
     }
 
     pub fn sell_vehicle(&mut self, vehicle_guid: Guid) -> Result<(), String> {
@@ -198,6 +203,7 @@ impl Core {
 
     fn load(&mut self) -> Result<(), Box<dyn Error>> {
         self.descriptions.alerts = load_alerts_static(ALERTS_YAML)?;
+        self.descriptions.bases = load_bases_static(BASES_YAML)?;
         self.descriptions.damage_types = load_damage_types_static(DAMAGE_TYPES_YAML)?;
         self.descriptions.items = load_items_static(ITEMS_YAML)?.items;
         self.descriptions.vehicles = load_vehicles_static(VEHICLES_YAML)?.vehicles;
@@ -209,6 +215,8 @@ impl Core {
 impl Core {
     fn init_world(&mut self) {
         // Создание vehicle на основе данных из YAML (VEHICLE_CAR)
+
+    self.create_base("BASE_MAIN", Pos { x: 10.0, y: 10.0 }).unwrap();
 
     for _ in 0..1 {
         let vehicle = self.create_vehicle("VEHICLE_CAR", Pos { x: 5.0, y: 5.0 })

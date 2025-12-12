@@ -7,6 +7,8 @@ use std::{collections::{HashMap, HashSet}, error::Error};
 pub struct Descriptions {
     /// Описания алертов, где ключ - тип алерта, значение - структура с данными алерта
     pub alerts: AlertsDescriptions,
+    /// Описания баз, где ключ - тип базы, значение - структура с данными базы
+    pub bases: BasesDescriptions,
     /// Предметы, где ключ - название предмета, значение - данные предмета
     pub items: HashMap<String, ItemYaml>,
     /// Транспортные средства, где ключ - название транспорта, значение - данные транспорта
