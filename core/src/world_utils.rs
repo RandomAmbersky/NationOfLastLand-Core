@@ -1,5 +1,5 @@
 use hecs::{World, Entity};
-use crate::modules::{components::{BaseType, Guid, Target, WeaponMode}, markers::{AttackEvent, IsTargetNear, IsWaitingTarget}};
+use crate::modules::{components::{BaseType, Guid, Owner, Target, WeaponMode}, markers::{AttackEvent, IsTargetNear, IsWaitingTarget}};
 
 #[derive(Clone, Debug)]
 pub struct Attack {
@@ -59,6 +59,19 @@ pub fn reset_target (world: &mut World, entity: Entity) {
 pub fn remove_entity(world: &mut World, entity: Entity) -> Result<(), String> {
     if !world.contains(entity) {
         return Err("Entity not found".to_string());
+    }
+
+    // Remove all owned entities
+    let owned_entities: Vec<Entity> = world.query::<&Owner>().iter().filter_map(|(e, owner)| {
+        if owner.e == entity {
+            Some(e)
+        } else {
+            None
+        }
+    }).collect();
+
+    for owned in owned_entities {
+        remove_entity(world, owned)?;
     }
 
     // Remove from internal data maps
