@@ -1,7 +1,7 @@
 use crate::descriptions::{Descriptions, load_alerts_static, load_bases_static, load_damage_types_static, load_floors_static, load_items_static, load_vehicles_static};
 use crate::exporter::{export_entity_to_json, export_to_json};
 use crate::internal_data::get_entity_by_guid;
-use crate::modules::components::{AttachedItems, Floors, Guid, Owner, Pos};
+use crate::modules::components::{AttachedItems, Floors, Guid, Pos};
 use crate::modules::markers::Item;
 use crate::modules::systems::dead_remover::do_remove_dead;
 use crate::modules::systems::interaction_system::do_interaction;
@@ -179,51 +179,32 @@ impl Core {
     }
 
     pub fn attach_floor_to_base(&mut self, base: Entity, floor_type: &str) -> Result<(), String> {
-        // Check if floor type exists in descriptions
-        if self.descriptions.floors.contains_key(floor_type) {
-            // Get base type
-            let base_type = get_base_type(&self.world, base)?;
-            // Get base description
-            if let Some(base_desc) = self.descriptions.bases.get(&base_type) {
-                // Get base position
-                let base_pos = *self.world.get::<&Pos>(base).map_err(|_| "Base has no position")?;
+        let base_type = get_base_type(&mut self.world, base)?;
 
-                // Check if base has Floors component
-                {
-                    let floors = self.world.get::<&Floors>(base).map_err(|_| "Base does not have Floors component")?;
-                    // Check if not exceeding max_floors
-                    if floors.0.len() >= base_desc.max_floors as usize {
-                        return Err(format!("Cannot attach floor: maximum floors ({}) reached for base type '{}'", base_desc.max_floors, base_type));
-                    }
-                    // Check if floor type is already attached (by checking if any floor entity with this type exists)
-                    let already_attached = floors.0.iter().any(|&floor_entity| {
-                        if let Ok(floor_type_existing) = get_base_type(&self.world, floor_entity) {
-                            floor_type_existing == floor_type
-                        } else {
-                            false
-                        }
-                    });
-                    if already_attached {
-                        return Err(format!("Floor '{}' is already attached to this base", floor_type));
-                    }
-                }
+        let base_desc = self.descriptions.bases.get(&base_type)
+            .ok_or(format!("Base type '{}' not found in descriptions", base_type))?;
 
-                // Create new floor entity
-                let floor_entity = create_floor_from_description(&mut self.world, &self.descriptions, floor_type, base_pos)?;
-                // Attach floor to base
-                attach_entity(&mut self.world, floor_entity, base)?;
-                // Add floor entity to the list
-                {
-                    let mut floors = self.world.get::<&mut Floors>(base).map_err(|_| "Base does not have Floors component")?;
-                    floors.0.push(floor_entity);
-                }
-                Ok(())
-            } else {
-                Err(format!("Base type '{}' not found in descriptions", base_type))
+        // Check current floors count
+        {
+            let mut query = self.world.query_one::<&Floors>(base)
+                .map_err(|_| "Base does not have Floors component".to_string())?;
+            let floors = query.get().ok_or("Base does not have Floors component")?;
+            
+            if floors.0.len() >= base_desc.max_floors as usize {
+                return Err(format!("Cannot attach floor: maximum floors ({}) reached for base type '{}'", base_desc.max_floors, base_type));
             }
-        } else {
-            Err(format!("Floor type '{}' not found in descriptions", floor_type))
-        }
+        };
+
+
+        let floor_entity = create_floor_from_description(&mut self.world, &self.descriptions, floor_type)?;
+        attach_entity(&mut self.world, floor_entity, base)?;
+
+        let mut query = self.world.query_one::<&mut Floors>(base)
+            .map_err(|_| "Base does not have Floors component".to_string())?;
+        let floors = query.get().ok_or("Base does not have Floors component")?;
+        floors.0.push(floor_entity);
+
+        Ok(())
     }
 
     pub fn export_world(&self, is_pretty: bool) -> String {

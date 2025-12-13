@@ -72,10 +72,9 @@ pub fn create_base_from_description(world: &mut World, descriptions: &Descriptio
     }
 }
 
-pub fn create_floor_from_description(world: &mut World, descriptions: &Descriptions, floor_key: &str, pos: Pos) -> Result<Entity, String> {
+pub fn create_floor_from_description(world: &mut World, descriptions: &Descriptions, floor_key: &str) -> Result<Entity, String> {
     if descriptions.floors.contains_key(floor_key) {
         let e = spawn_entity(world, (
-            pos,
             BaseType(floor_key.to_string()),
             EntityType::Floor,
             Floor {},
