@@ -143,10 +143,6 @@ impl Core {
         &self.descriptions
     }
 
-    pub fn get_descriptions_mut(&mut self) -> &mut Descriptions {
-        &mut self.descriptions
-    }
-
     pub fn attach_to_vehicle(&mut self, vehicle: Entity, item: Entity, slot_id: &str) -> Result<(), String> {
         // Get vehicle type
         let vehicle_type = get_base_type(&self.world, vehicle)?;
