@@ -1,7 +1,7 @@
 use crate::descriptions::Descriptions;
 use crate::descriptions::alerts::AlertYaml;
 use crate::descriptions::bases::BaseYaml;
-use crate::modules::components::{BaseType, EntityType, Floors, Force, Health, MaxSpeed, Owner, Pos, Reputation, ReputationCost, Rot, Velocity};
+use crate::modules::components::{BaseType, EntityType, Floors, Force, Health, MaxSpeed, Pos, Reputation, ReputationCost, Rot, Velocity};
 use crate::modules::markers::{Base, Floor, IsWaitingTarget, Item, Vehicle};
 use crate::random_generator::RandomGenerator;
 use crate::world_utils::spawn_entity;
@@ -72,14 +72,13 @@ pub fn create_base_from_description(world: &mut World, descriptions: &Descriptio
     }
 }
 
-pub fn create_floor_from_description(world: &mut World, descriptions: &Descriptions, floor_key: &str, pos: Pos, owner: Owner) -> Result<Entity, String> {
+pub fn create_floor_from_description(world: &mut World, descriptions: &Descriptions, floor_key: &str, pos: Pos) -> Result<Entity, String> {
     if descriptions.floors.contains_key(floor_key) {
         let e = spawn_entity(world, (
             pos,
             BaseType(floor_key.to_string()),
             EntityType::Floor,
             Floor {},
-            owner,
         ));
 
         Ok(e)

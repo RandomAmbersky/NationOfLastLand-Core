@@ -48,24 +48,17 @@ pub fn spawn_attack_event(world: &mut World, ev: Attack) -> Result<Entity, Strin
     Ok(e)
 }
 
-pub fn attach_entity(world: &mut World, entity: Entity, owner: Entity) -> Result<(), String> {
-    if !world.contains(entity) {
-        return Err("Entity not found".to_string());
-    }
-    if !world.contains(owner) {
-        return Err("Owner entity not found".to_string());
-    }
-
-    let owner_guid = get_guid_by_entity(&owner).ok_or("Owner guid not found in internal data".to_string())?;
-
-    world.insert_one(entity, Owner { e: owner, guid: owner_guid }).map_err(|_| "Failed to insert Owner".to_string())?;
-    Ok(())
-}
-
 pub fn reset_target (world: &mut World, entity: Entity) {
     world.remove_one::<Target>(entity).unwrap();
     world.remove_one::<IsTargetNear>(entity).unwrap();
     world.insert_one(entity, IsWaitingTarget {}).unwrap();
+}
+
+pub fn attach_entity(world: &mut World, entity: Entity, owner: Entity) -> Result<(), String> {
+    let owner_guid = get_guid_by_entity(&owner).ok_or("Owner guid not found in internal data".to_string())?;
+
+    world.insert_one(entity, Owner { e: owner, guid: owner_guid }).map_err(|_| "Failed to insert Owner".to_string())?;
+    Ok(())
 }
 
 pub fn remove_entity(world: &mut World, entity: Entity) -> Result<(), String> {

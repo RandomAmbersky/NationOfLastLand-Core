@@ -6,7 +6,7 @@ use crate::modules::markers::Item;
 use crate::modules::systems::dead_remover::do_remove_dead;
 use crate::modules::systems::interaction_system::do_interaction;
 use crate::modules::systems::move_system::{do_move, set_speed_by_target};
-use crate::world_utils::{get_base_type, remove_entity};
+use crate::world_utils::{attach_entity, get_base_type, remove_entity};
 
 use crate::modules::setup::{self, load_setup_static};
 use crate::modules::state::State;
@@ -158,10 +158,8 @@ impl Core {
         if has_slot {
             // Check if item is an item
             if self.world.get::<&Item>(item).is_ok() {
-                // Get vehicle guid
-                let vehicle_guid = *self.world.get::<&Guid>(vehicle).map_err(|_| "Vehicle has no Guid")?;
-                // Insert Owner component to item
-                self.world.insert_one(item, Owner { e: vehicle, guid: vehicle_guid }).expect("Failed to insert Owner component");
+                // Attach item to vehicle
+                attach_entity(&mut self.world, item, vehicle)?;
 
                 if self.world.get::<&AttachedItems>(vehicle).is_err() {
                     self.world.insert_one(vehicle, AttachedItems::new()).unwrap();
@@ -189,9 +187,6 @@ impl Core {
             if let Some(base_desc) = self.descriptions.bases.get(&base_type) {
                 // Get base position
                 let base_pos = *self.world.get::<&Pos>(base).map_err(|_| "Base has no position")?;
-                // Get base guid
-                let base_guid = *self.world.get::<&Guid>(base).map_err(|_| "Base has no Guid")?;
-                let owner = Owner { e: base, guid: base_guid };
 
                 // Check if base has Floors component
                 {
@@ -214,7 +209,9 @@ impl Core {
                 }
 
                 // Create new floor entity
-                let floor_entity = create_floor_from_description(&mut self.world, &self.descriptions, floor_type, base_pos, owner)?;
+                let floor_entity = create_floor_from_description(&mut self.world, &self.descriptions, floor_type, base_pos)?;
+                // Attach floor to base
+                attach_entity(&mut self.world, floor_entity, base)?;
                 // Add floor entity to the list
                 {
                     let mut floors = self.world.get::<&mut Floors>(base).map_err(|_| "Base does not have Floors component")?;
