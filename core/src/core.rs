@@ -195,7 +195,6 @@ impl Core {
             }
         };
 
-
         let floor_entity = create_floor_from_description(&mut self.world, &self.descriptions, floor_type)?;
         attach_entity(&mut self.world, floor_entity, base)?;
 
