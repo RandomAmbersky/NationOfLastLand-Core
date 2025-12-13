@@ -133,6 +133,7 @@ fn create_main_base(world: &mut World, pos: Pos, description: &BaseYaml) -> Enti
         pos,
         Base {},
         EntityType::Base,
+        BaseType(description.base_type.clone()),
         Reputation(description.reputation_cost_destroy),
         Floors(description.floors.clone())
     ));

@@ -184,17 +184,28 @@ impl Core {
     pub fn attach_floor_to_base(&mut self, base: Entity, floor_type: &str) -> Result<(), String> {
         // Check if floor type exists in descriptions
         if self.descriptions.floors.contains_key(floor_type) {
-            // Check if base has Floors component
-            if let Ok(mut floors) = self.world.get::<&mut Floors>(base) {
-                // Add floor type to the list if not already present
-                if !floors.0.contains(&floor_type.to_string()) {
-                    floors.0.push(floor_type.to_string());
-                    Ok(())
+            // Get base type
+            let base_type = get_base_type(&self.world, base)?;
+            // Get base description
+            if let Some(base_desc) = self.descriptions.bases.get(&base_type) {
+                // Check if base has Floors component
+                if let Ok(mut floors) = self.world.get::<&mut Floors>(base) {
+                    // Check if not exceeding max_floors
+                    if floors.0.len() >= base_desc.max_floors as usize {
+                        return Err(format!("Cannot attach floor: maximum floors ({}) reached for base type '{}'", base_desc.max_floors, base_type));
+                    }
+                    // Add floor type to the list if not already present
+                    if !floors.0.contains(&floor_type.to_string()) {
+                        floors.0.push(floor_type.to_string());
+                        Ok(())
+                    } else {
+                        Err(format!("Floor '{}' is already attached to this base", floor_type))
+                    }
                 } else {
-                    Err(format!("Floor '{}' is already attached to this base", floor_type))
+                    Err("Base does not have Floors component".to_string())
                 }
             } else {
-                Err("Base does not have Floors component".to_string())
+                Err(format!("Base type '{}' not found in descriptions", base_type))
             }
         } else {
             Err(format!("Floor type '{}' not found in descriptions", floor_type))
