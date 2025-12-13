@@ -44,7 +44,8 @@ pub fn remove_by_guid(guid: &Guid) {
     });
 }
 
-pub fn _remove_by_entity(entity: &Entity) {
+#[allow(dead_code)]
+pub fn remove_by_entity(entity: &Entity) {
     INTERNAL_DATA.with(|data| {
         let mut data = data.borrow_mut();
         if let Some(guid) = data.entity_to_guid.remove(entity) {
