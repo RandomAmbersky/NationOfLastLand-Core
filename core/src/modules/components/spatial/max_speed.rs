@@ -1,6 +1,6 @@
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Clone, Copy)]
-pub struct MaxSpeed {
-    pub value: f32,
-}
+use crate::defines::MinMax;
+
+#[derive(Serialize, Deserialize, Clone, Copy, Debug)]
+pub struct MaxSpeed (pub MinMax);

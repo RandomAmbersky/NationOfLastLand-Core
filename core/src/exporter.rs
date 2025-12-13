@@ -2,7 +2,7 @@ use crate::modules::components::*;
 use crate::modules::markers::*;
 
 use crate::modules::state::State;
-use hecs::{serialize::row::*, World, EntityRef};
+use hecs::{serialize::row::*, World, EntityRef, Entity};
 use serde::{Serialize, ser::SerializeMap};
 
 macro_rules! define_serialize_components {
@@ -40,11 +40,12 @@ macro_rules! define_serialize_markers {
 }
 
 define_serialize_components! {
-    Guid, Pos, Force, EntityType, Health, Velocity, Rot, MaxSpeed, TargetPos, Reputation, TargetId, DamageType
+    Guid, Pos, EntityType, Health, Target, Velocity, Rot, Trash, Reputation, ReputationCost, DamageType, BaseType, MaxSpeed, Owner, AttachedItems,
+    UnitName
 }
 
 define_serialize_markers! {
-    Alert, Vehicle, IsMoving, IsWaitingTarget, Stopped
+    Alert, Vehicle, IsMoving, IsWaitingTarget
 }
 
 struct ExportData {
@@ -82,7 +83,7 @@ impl SerializeContext for Context {
     }
 }
 
-pub fn export_to_json(world: &World, state: &State) -> String {
+pub fn export_to_json(world: &World, state: &State, is_pretty: bool) -> String {
     let mut units = Vec::new();
 
     for (_id, _entity_type) in world.query::<&EntityType>().iter() {
@@ -97,7 +98,22 @@ pub fn export_to_json(world: &World, state: &State) -> String {
         units,
         state: state.clone(),
     };
+    if is_pretty {
+        return serde_json::to_string_pretty(&data).unwrap()
+    }
     serde_json::to_string(&data).unwrap()
+}
+
+pub fn export_entity_to_json(world: &World, entity: Entity, is_pretty: bool) -> String {
+    let entity_ref = world.entity(entity).unwrap();
+    let unit_val = serde_json::to_value(UnitExport {
+        entity: entity_ref,
+    }).unwrap();
+    if is_pretty {
+        serde_json::to_string_pretty(&unit_val).unwrap()
+    } else {
+        serde_json::to_string(&unit_val).unwrap()
+    }
 }
 
 struct UnitExport<'a> {
@@ -109,7 +125,8 @@ impl Serialize for UnitExport<'_> {
     where
         S: serde::Serializer,
     {
-        let map = serializer.serialize_map(None)?;
+        let mut map = serializer.serialize_map(None)?;
+        map.serialize_entry("id", &self.entity.entity().to_bits())?;
         let mut context = Context;
         context.serialize_entity(self.entity.clone(), map)
     }

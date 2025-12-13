@@ -1,12 +1,20 @@
-use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash, Debug)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum DamageType {
-    Physical,   // можно разбить на Slash, Pierce и т.д.
-    Fire,
-    Ice,
-    Lightning,
-    Poison,
-    Holy,
-    Magic,
+    Clean,
+    Acid,
+    Physical,
+}
+
+impl DamageType {
+    pub fn from_str(s: &str) -> Option<Self> {
+        match s {
+            "DMG_CLEAN" => Some(DamageType::Clean),
+            "DMG_ACID" => Some(DamageType::Acid),
+            "Physical" => Some(DamageType::Physical),
+            _ => None,
+        }
+    }
 }
