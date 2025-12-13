@@ -2,7 +2,7 @@ use crate::descriptions::Descriptions;
 use crate::descriptions::alerts::AlertYaml;
 use crate::descriptions::bases::BaseYaml;
 use crate::modules::components::{BaseType, EntityType, Floors, Force, Guid, Health, MaxSpeed, Pos, Reputation, ReputationCost, Rot, Velocity};
-use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
+use crate::modules::markers::{Base, IsWaitingTarget, Item, Vehicle};
 use crate::random_generator::RandomGenerator;
 use crate::world_utils::spawn_entity;
 use hecs::{Entity, World};
@@ -84,7 +84,7 @@ pub fn create_base_from_description(world: &mut World, descriptions: &Descriptio
     if let Some(description) = descriptions.bases.get(base_key) {
         match base_key {
             "BASE_MAIN" => Ok(create_main_base(world, pos, r, description)),
-            "BASE_OUTPOST" => Ok(create_outpost(world, pos, r, description)),
+            "BASE_OUTPOST" => Ok(create_main_base(world, pos, r, description)),
             _ => Err(format!("Unknown base type '{}'", base_key)),
         }
     } else {
@@ -129,11 +129,14 @@ fn create_waste(world: &mut World, pos: Pos, r: &RandomGenerator,  description: 
 }
 
 fn create_main_base(world: &mut World, pos: Pos, r: &RandomGenerator, description: &BaseYaml) -> Entity {
-    let bundle = r.get_bundle_base(pos);
-    let e = spawn_entity(world, bundle);
-    world.insert_one(e, Reputation(description.reputation_cost_destroy)).unwrap();
-    world.insert_one(e, Floors { floors: description.floors }).unwrap();
-
+    let e = spawn_entity(world, (
+        pos,
+        Base {},
+        EntityType::Base, 
+        Reputation(description.reputation_cost_destroy),
+        Floors { floors: description.floors }
+    ));
+    
     // Update internal data maps
     if let Ok(guid) = world.get::<&Guid>(e) {
         let guid = *guid;
@@ -147,21 +150,3 @@ fn create_main_base(world: &mut World, pos: Pos, r: &RandomGenerator, descriptio
     e
 }
 
-fn create_outpost(world: &mut World, pos: Pos, r: &RandomGenerator, description: &BaseYaml) -> Entity {
-    let bundle = r.get_bundle_base(pos);
-    let e = spawn_entity(world, bundle);
-    world.insert_one(e, Reputation(description.reputation_cost_destroy)).unwrap();
-    world.insert_one(e, Floors { floors: description.floors }).unwrap();
-
-    // Update internal data maps
-    if let Ok(guid) = world.get::<&Guid>(e) {
-        let guid = *guid;
-        crate::internal_data::INTERNAL_DATA.with(|data| {
-            let mut data = data.borrow_mut();
-            data.guid_to_entity.insert(guid, e);
-            data.entity_to_guid.insert(e, guid);
-        });
-    }
-
-    e
-}

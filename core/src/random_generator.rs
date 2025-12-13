@@ -52,13 +52,6 @@ impl RandomGenerator {
         (pos, Health { current: health, max: health, cup: MinMax { max: health, min: health } }, EntityType::Waste, Alert {}, resistance)
     }
 
-    pub fn get_bundle_base(&self, pos: Pos) -> (Pos, Health, EntityType, Base, Resistance) {
-        let health = generate_between(&self.toxic_health);
-        let mut resistance = Resistance::default();
-        resistance.resistances.insert(DamageType::Physical, 0.0);
-        (pos, Health { current: health, max: health, cup: MinMax { max: health, min: health } }, EntityType::Base, Base {}, resistance)
-    }
-
     pub fn generate_unit_name(&self) -> UnitName {
         let mut rng = rand::thread_rng();
         let letter1 = (b'A' + rng.gen_range(0..26)) as char;
