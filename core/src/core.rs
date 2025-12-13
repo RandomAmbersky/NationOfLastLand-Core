@@ -12,7 +12,7 @@ use crate::modules::state::State;
 use crate::modules::systems::ai_vehicle::{ai_vehicle_system};
 use crate::modules::systems::attack_processor::attack_process;
 use crate::random_generator::RandomGenerator;
-use crate::spawner::{create_alert_from_description, create_base_from_description, create_item_from_description, create_vehicle_from_description};
+use crate::spawner::{create_alert_from_description, create_base_from_description, create_floor_from_description, create_item_from_description, create_vehicle_from_description};
 use hecs::{Entity, World};
 use std::error::Error;
 
@@ -188,22 +188,40 @@ impl Core {
             let base_type = get_base_type(&self.world, base)?;
             // Get base description
             if let Some(base_desc) = self.descriptions.bases.get(&base_type) {
+                // Get base position
+                let base_pos = *self.world.get::<&Pos>(base).map_err(|_| "Base has no position")?;
+                // Get base guid
+                let base_guid = *self.world.get::<&Guid>(base).map_err(|_| "Base has no Guid")?;
+                let owner = Owner { e: base, guid: base_guid };
+
                 // Check if base has Floors component
-                if let Ok(mut floors) = self.world.get::<&mut Floors>(base) {
+                {
+                    let floors = self.world.get::<&Floors>(base).map_err(|_| "Base does not have Floors component")?;
                     // Check if not exceeding max_floors
                     if floors.0.len() >= base_desc.max_floors as usize {
                         return Err(format!("Cannot attach floor: maximum floors ({}) reached for base type '{}'", base_desc.max_floors, base_type));
                     }
-                    // Add floor type to the list if not already present
-                    if !floors.0.contains(&floor_type.to_string()) {
-                        floors.0.push(floor_type.to_string());
-                        Ok(())
-                    } else {
-                        Err(format!("Floor '{}' is already attached to this base", floor_type))
+                    // Check if floor type is already attached (by checking if any floor entity with this type exists)
+                    let already_attached = floors.0.iter().any(|&floor_entity| {
+                        if let Ok(floor_type_existing) = get_base_type(&self.world, floor_entity) {
+                            floor_type_existing == floor_type
+                        } else {
+                            false
+                        }
+                    });
+                    if already_attached {
+                        return Err(format!("Floor '{}' is already attached to this base", floor_type));
                     }
-                } else {
-                    Err("Base does not have Floors component".to_string())
                 }
+
+                // Create new floor entity
+                let floor_entity = create_floor_from_description(&mut self.world, &self.descriptions, floor_type, base_pos, owner)?;
+                // Add floor entity to the list
+                {
+                    let mut floors = self.world.get::<&mut Floors>(base).map_err(|_| "Base does not have Floors component")?;
+                    floors.0.push(floor_entity);
+                }
+                Ok(())
             } else {
                 Err(format!("Base type '{}' not found in descriptions", base_type))
             }

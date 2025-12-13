@@ -1,8 +1,8 @@
 use crate::descriptions::Descriptions;
 use crate::descriptions::alerts::AlertYaml;
 use crate::descriptions::bases::BaseYaml;
-use crate::modules::components::{BaseType, EntityType, Floors, Force, Guid, Health, MaxSpeed, Pos, Reputation, ReputationCost, Rot, Velocity};
-use crate::modules::markers::{Base, IsWaitingTarget, Item, Vehicle};
+use crate::modules::components::{BaseType, EntityType, Floors, Force, Guid, Health, MaxSpeed, Owner, Pos, Reputation, ReputationCost, Rot, Velocity};
+use crate::modules::markers::{Base, Floor, IsWaitingTarget, Item, Vehicle};
 use crate::random_generator::RandomGenerator;
 use crate::world_utils::spawn_entity;
 use hecs::{Entity, World};
@@ -92,6 +92,32 @@ pub fn create_base_from_description(world: &mut World, descriptions: &Descriptio
     }
 }
 
+pub fn create_floor_from_description(world: &mut World, descriptions: &Descriptions, floor_key: &str, pos: Pos, owner: Owner) -> Result<Entity, String> {
+    if descriptions.floors.contains_key(floor_key) {
+        let e = spawn_entity(world, (
+            pos,
+            BaseType(floor_key.to_string()),
+            EntityType::Floor,
+            Floor {},
+            owner,
+        ));
+
+        // Update internal data maps
+        if let Ok(guid) = world.get::<&Guid>(e) {
+            let guid = *guid;
+            crate::internal_data::INTERNAL_DATA.with(|data| {
+                let mut data = data.borrow_mut();
+                data.guid_to_entity.insert(guid, e);
+                data.entity_to_guid.insert(e, guid);
+            });
+        }
+
+        Ok(e)
+    } else {
+        Err(format!("Floor '{}' not found in descriptions", floor_key))
+    }
+}
+
 fn create_trash(world: &mut World, pos: Pos, r: &RandomGenerator, description: &AlertYaml) -> Entity {
     let bundle = r.get_bundle_trash(pos);
     let e = spawn_entity(world, bundle);
@@ -134,9 +160,10 @@ fn create_main_base(world: &mut World, pos: Pos, description: &BaseYaml) -> Enti
         Base {},
         EntityType::Base,
         BaseType(description.base_type.clone()),
-        Reputation(description.reputation_cost_destroy)
+        Reputation(description.reputation_cost_destroy),
+        Floors(Vec::new())
     ));
-    
+
     // Update internal data maps
     if let Ok(guid) = world.get::<&Guid>(e) {
         let guid = *guid;

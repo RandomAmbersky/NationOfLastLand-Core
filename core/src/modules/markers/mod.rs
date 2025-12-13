@@ -8,6 +8,7 @@ mod is_target_near;
 mod attack_event;
 mod is_dead;
 mod base;
+mod floor;
 
 pub use alert::Alert;
 pub use vehicle::Vehicle;
@@ -19,3 +20,4 @@ pub use is_target_near::IsTargetNear;
 pub use attack_event::AttackEvent;
 pub use is_dead::IsDead;
 pub use base::Base;
+pub use floor::Floor;

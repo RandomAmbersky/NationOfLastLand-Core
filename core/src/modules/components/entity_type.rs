@@ -6,5 +6,6 @@ pub enum EntityType {
     Trash,
     Vehicle,
     Item,
-    Base
+    Base,
+    Floor
 }

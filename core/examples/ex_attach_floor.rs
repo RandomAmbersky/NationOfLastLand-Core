@@ -1,5 +1,5 @@
 use nation_of_last_land_core::Core;
-use nation_of_last_land_core::modules::components::Pos;
+use nation_of_last_land_core::modules::components::{Floors, Pos};
 
 fn main() {
     let mut core = Core::new();
@@ -20,4 +20,17 @@ fn main() {
     // Вывод содержимого базы
     let base_content = core.export_entity(base, true);
     println!("Base content:\n{}", base_content);
+
+    // Получение floor_entity
+    let floor_entity_opt = if let Ok(floors) = core.get_world().get::<&Floors>(base) {
+        floors.0.first().copied()
+    } else {
+        None
+    };
+
+    // Вывод содержимого этажа
+    if let Some(floor_entity) = floor_entity_opt {
+        let floor_content = core.export_entity(floor_entity, true);
+        println!("Floor content:\n{}", floor_content);
+    }
 }
