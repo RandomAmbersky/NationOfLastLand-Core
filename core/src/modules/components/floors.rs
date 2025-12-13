@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, Copy)]
-pub struct Floors {
-    pub floors: u32,
-}
+use serde::Serialize;
+
+#[derive(Serialize, Clone, Copy)]
+pub struct Floors(pub u32);

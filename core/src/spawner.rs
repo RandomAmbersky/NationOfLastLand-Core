@@ -83,8 +83,8 @@ pub fn create_alert_from_description(world: &mut World, descriptions: &Descripti
 pub fn create_base_from_description(world: &mut World, descriptions: &Descriptions, base_key: &str, pos: Pos, r: &RandomGenerator) -> Result<Entity, String> {
     if let Some(description) = descriptions.bases.get(base_key) {
         match base_key {
-            "BASE_MAIN" => Ok(create_main_base(world, pos, r, description)),
-            "BASE_OUTPOST" => Ok(create_main_base(world, pos, r, description)),
+            "BASE_MAIN" => Ok(create_main_base(world, pos, description)),
+            "BASE_OUTPOST" => Ok(create_main_base(world, pos, description)),
             _ => Err(format!("Unknown base type '{}'", base_key)),
         }
     } else {
@@ -128,13 +128,13 @@ fn create_waste(world: &mut World, pos: Pos, r: &RandomGenerator,  description: 
     e
 }
 
-fn create_main_base(world: &mut World, pos: Pos, r: &RandomGenerator, description: &BaseYaml) -> Entity {
+fn create_main_base(world: &mut World, pos: Pos, description: &BaseYaml) -> Entity {
     let e = spawn_entity(world, (
         pos,
         Base {},
         EntityType::Base, 
         Reputation(description.reputation_cost_destroy),
-        Floors { floors: description.floors }
+        Floors(description.floors)
     ));
     
     // Update internal data maps
@@ -149,4 +149,3 @@ fn create_main_base(world: &mut World, pos: Pos, r: &RandomGenerator, descriptio
 
     e
 }
-
