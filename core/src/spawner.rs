@@ -1,7 +1,7 @@
 use crate::descriptions::Descriptions;
 use crate::descriptions::alerts::AlertYaml;
 use crate::descriptions::bases::BaseYaml;
-use crate::modules::components::{BaseType, EntityType, Force, Guid, Health, MaxSpeed, Pos, Reputation, ReputationCost, Rot, Velocity};
+use crate::modules::components::{BaseType, EntityType, Floors, Force, Guid, Health, MaxSpeed, Pos, Reputation, ReputationCost, Rot, Velocity};
 use crate::modules::markers::{IsWaitingTarget, Vehicle, Item};
 use crate::random_generator::RandomGenerator;
 use crate::world_utils::spawn_entity;
@@ -132,6 +132,7 @@ fn create_main_base(world: &mut World, pos: Pos, r: &RandomGenerator, descriptio
     let bundle = r.get_bundle_base(pos);
     let e = spawn_entity(world, bundle);
     world.insert_one(e, Reputation(description.reputation_cost_destroy)).unwrap();
+    world.insert_one(e, Floors { floors: description.floors }).unwrap();
 
     // Update internal data maps
     if let Ok(guid) = world.get::<&Guid>(e) {
@@ -150,6 +151,7 @@ fn create_outpost(world: &mut World, pos: Pos, r: &RandomGenerator, description:
     let bundle = r.get_bundle_base(pos);
     let e = spawn_entity(world, bundle);
     world.insert_one(e, Reputation(description.reputation_cost_destroy)).unwrap();
+    world.insert_one(e, Floors { floors: description.floors }).unwrap();
 
     // Update internal data maps
     if let Ok(guid) = world.get::<&Guid>(e) {
