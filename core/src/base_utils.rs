@@ -1,6 +1,6 @@
 use crate::descriptions::Descriptions;
 use crate::modules::components::Owner;
-use crate::modules::markers::AttachFloorEvent;
+use crate::modules::markers::AddFloorEvent;
 use crate::world_utils::{get_base_type, spawn_entity};
 use hecs::{Entity, World};
 
@@ -46,7 +46,7 @@ pub fn add_floor_to_base(
     can_attach_floor_to_base(world, descriptions, base, floor_type)?;
 
     // Create attach event
-    spawn_entity(world, (AttachFloorEvent {
+    spawn_entity(world, (AddFloorEvent {
         base,
         floor_type: floor_type.to_string(),
     },));

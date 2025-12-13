@@ -2,14 +2,14 @@ use hecs::{Entity, World};
 
 use crate::descriptions::Descriptions;
 use crate::modules::components::AttachedFloors;
-use crate::modules::markers::AttachFloorEvent;
+use crate::modules::markers::AddFloorEvent;
 use crate::spawner::create_floor_from_description;
 use crate::world_utils::attach_entity;
 
 pub fn attach_process(world: &mut World, descriptions: &Descriptions) {
     // Collect attach events to process and remove them later to avoid borrowing issues
-    let attach_events: Vec<(Entity, AttachFloorEvent)> = world
-        .query::<&AttachFloorEvent>()
+    let attach_events: Vec<(Entity, AddFloorEvent)> = world
+        .query::<&AddFloorEvent>()
         .iter()
         .map(|(e, event)| (e, event.clone()))
         .collect();

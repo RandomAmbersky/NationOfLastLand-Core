@@ -9,7 +9,7 @@ mod attack_event;
 mod is_dead;
 mod base;
 mod floor;
-mod attach_floor_event;
+mod add_floor_event;
 
 pub use alert::Alert;
 pub use vehicle::Vehicle;
@@ -22,4 +22,4 @@ pub use attack_event::AttackEvent;
 pub use is_dead::IsDead;
 pub use base::Base;
 pub use floor::Floor;
-pub use attach_floor_event::AttachFloorEvent;
+pub use add_floor_event::AddFloorEvent;
