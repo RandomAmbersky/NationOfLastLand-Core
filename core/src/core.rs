@@ -1,8 +1,8 @@
-use crate::base_utils::can_attach_floor_to_base;
+use crate::base_utils::attach_floor_to_base;
 use crate::descriptions::{Descriptions, load_alerts_static, load_bases_static, load_damage_types_static, load_floors_static, load_items_static, load_vehicles_static};
 use crate::exporter::{export_entity_to_json, export_to_json};
 use crate::internal_data::get_entity_by_guid;
-use crate::modules::components::{AttachedItems, Floors, Guid, Pos};
+use crate::modules::components::{AttachedItems, Guid, Pos};
 use crate::modules::markers::Item;
 use crate::modules::systems::dead_remover::do_remove_dead;
 use crate::modules::systems::interaction_system::do_interaction;
@@ -14,7 +14,7 @@ use crate::modules::state::State;
 use crate::modules::systems::ai_vehicle::{ai_vehicle_system};
 use crate::modules::systems::attack_processor::attack_process;
 use crate::random_generator::RandomGenerator;
-use crate::spawner::{create_alert_from_description, create_base_from_description, create_floor_from_description, create_item_from_description, create_vehicle_from_description};
+use crate::spawner::{create_alert_from_description, create_base_from_description, create_item_from_description, create_vehicle_from_description};
 use hecs::{Entity, World};
 use std::error::Error;
 
@@ -180,18 +180,7 @@ impl Core {
     }
 
     pub fn attach_floor_to_base(&mut self, base: Entity, floor_type: &str) -> Result<(), String> {
-        // Check if we can attach
-        can_attach_floor_to_base(&self.world, &self.descriptions, base, floor_type)?;
-
-        let floor_entity = create_floor_from_description(&mut self.world, &self.descriptions, floor_type)?;
-        attach_entity(&mut self.world, floor_entity, base)?;
-
-        let mut query = self.world.query_one::<&mut Floors>(base)
-            .map_err(|_| "Base does not have Floors component".to_string())?;
-        let floors = query.get().ok_or("Base does not have Floors component")?;
-        floors.0.push(floor_entity);
-
-        Ok(())
+        attach_floor_to_base(&mut self.world, &self.descriptions, base, floor_type)
     }
 
     pub fn export_world(&self, is_pretty: bool) -> String {
