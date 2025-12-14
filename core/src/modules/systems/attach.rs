@@ -7,8 +7,8 @@ use crate::modules::markers::AddFloorEvent;
 use crate::spawner::create_floor_from_description;
 use crate::world_utils::attach_entity;
 
-pub fn attach_process(world: &mut World, descriptions: &Descriptions) {
-    // Collect attach events to process and remove them later to avoid borrowing issues
+fn attach_floors(world: &mut World, descriptions: &Descriptions) {
+        // Collect attach events to process and remove them later to avoid borrowing issues
     let attach_events: Vec<(Entity, AddFloorEvent)> = world
         .query::<&AddFloorEvent>()
         .iter()
@@ -56,4 +56,8 @@ pub fn attach_process(world: &mut World, descriptions: &Descriptions) {
         // Remove the attach event entity after processing
         world.despawn(event_entity).unwrap();
     }
+}
+
+pub fn attach_process(world: &mut World, descriptions: &Descriptions) {
+    attach_floors(world, descriptions);
 }
